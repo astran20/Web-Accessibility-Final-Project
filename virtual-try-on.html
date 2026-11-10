@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#F6F3EC">
-    <title>Virtual Try-On Concept | RETHREAD</title>
+    <title>Virtual Try-On Demo | RETHREAD</title>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body class="rethread-site">
@@ -25,50 +25,79 @@
       <div class="rt-page-heading">
         <p class="rt-eyebrow">A LOOK AHEAD</p>
         <h1>Imagine it in your wardrobe.</h1>
-        <p>AI and AR could help shoppers picture how a secondhand piece might look before making a trip. This page is a static concept for that future experience.</p>
-        <p class="rt-demo-label">Concept demo — no real AI processing</p>
+        <p>AI and AR could help shoppers picture how a secondhand piece might look before making a trip. Pick a sample model and a piece from the local edit to preview the fit.</p>
+        <p class="rt-demo-label">Simulated demo — no real AI, camera, or photo upload</p>
       </div>
 
-      <section class="rt-tryon-board" aria-labelledby="tryon-board-heading">
+      <section class="rt-tryon-board rt-tryon-studio" aria-labelledby="tryon-board-heading" data-tryon>
         <div class="rt-tryon-intro">
-          <p class="rt-eyebrow">THE CONCEPT BOARD</p>
-          <h2 id="tryon-board-heading">A considered preview, not a fitting room.</h2>
-          <p>Choose a piece from the sample wardrobe to imagine a styling direction. The images below are separate editorial examples, not a generated try-on.</p>
+          <p class="rt-eyebrow">THE FITTING PREVIEW</p>
+          <h2 id="tryon-board-heading">Try a piece on a sample model.</h2>
+          <p>Choose a model, then a piece. The preview maps the garment onto the figure and estimates the fit from the sizes. Pin a look to compare it with another.</p>
         </div>
-        <div class="rt-tryon-preview">
-          <figure class="rt-model-panel">
-            <img src="assets/images/rust-floral-dress.jpg" alt="Model wearing a rust-colored floral dress">
-            <figcaption>Example model</figcaption>
-          </figure>
-          <div class="rt-preview-note">
-            <span class="rt-preview-kicker">STYLE IDEA</span>
-            <span class="rt-preview-divider" aria-hidden="true"></span>
-            <p>Try a strong outer layer with pieces you already own.</p>
-            <span class="rt-preview-tag">STATIC CONCEPT</span>
+
+        <noscript><p class="rt-tryon-noscript">The try-on preview needs JavaScript. You can still browse every piece on the <a href="index.html#clothes">Explore page</a>.</p></noscript>
+
+        <div class="rt-tryon-layout">
+          <div class="rt-tryon-controls">
+            <fieldset class="rt-choice-group">
+              <legend><span class="rt-step" aria-hidden="true">1</span> Choose a sample model</legend>
+              <div class="rt-choice-grid rt-choice-grid-models" data-tryon-models></div>
+            </fieldset>
+            <fieldset class="rt-choice-group">
+              <legend><span class="rt-step" aria-hidden="true">2</span> Choose a piece</legend>
+              <div class="rt-choice-grid rt-choice-grid-items" data-tryon-items></div>
+            </fieldset>
           </div>
-          <figure class="rt-garment-panel">
-            <img src="assets/images/brown-jacket.jpg" alt="Brown leather jacket worn over a dark shirt, shown as a styling reference">
-            <figcaption>Brown Leather Jacket</figcaption>
-          </figure>
+
+          <section class="rt-tryon-result" aria-labelledby="tryon-result-heading">
+            <div class="rt-tryon-result-heading">
+              <h3 id="tryon-result-heading"><span class="rt-step" aria-hidden="true">3</span> Your preview</h3>
+              <span class="rt-preview-tag">SIMULATED</span>
+            </div>
+            <figure class="rt-tryon-figure">
+              <div class="rt-tryon-stage" data-tryon-stage></div>
+              <p class="rt-tryon-progress" data-tryon-progress aria-hidden="true" hidden></p>
+              <figcaption data-tryon-caption></figcaption>
+            </figure>
+            <div class="rt-fit-summary">
+              <p class="rt-fit-heading"><span class="rt-fit-label" data-tryon-fit-label></span> <span class="rt-fit-score" data-tryon-fit-score></span></p>
+              <p class="rt-fit-note" data-tryon-fit-note></p>
+            </div>
+            <div class="rt-tryon-actions">
+              <button class="rt-button rt-button-secondary" type="button" data-tryon-save aria-pressed="false">Save to Favorites</button>
+              <a class="rt-button rt-button-secondary" href="item.html#item-01" data-tryon-view>View item</a>
+              <a class="rt-button rt-button-primary" href="booking.html?item=item-01" data-tryon-book>Book a try-on</a>
+            </div>
+            <button class="rt-text-button rt-pin-button" type="button" data-tryon-pin>Pin this look to compare</button>
+            <p class="rt-visually-hidden" role="status" data-tryon-status></p>
+          </section>
         </div>
-        <div class="rt-wardrobe">
+
+        <section class="rt-tryon-compare" aria-labelledby="tryon-compare-heading" data-tryon-compare hidden>
           <div class="rt-wardrobe-heading">
-            <h3>Sample wardrobe</h3>
-            <span>Choose a piece to view its details</span>
+            <h3 id="tryon-compare-heading">Compare looks</h3>
+            <button class="rt-text-button" type="button" data-tryon-unpin>Clear comparison</button>
           </div>
-          <div class="rt-wardrobe-grid">
-            <a href="item.html#item-01"><img src="assets/images/brown-jacket.jpg" alt="Brown leather jacket"><span>Brown jacket</span></a>
-            <a href="item.html#item-02"><img src="assets/images/cream-knit-sweater.jpg" alt="Cream knit sweater"><span>Cream knit</span></a>
-            <a href="item.html#item-03"><img src="assets/images/blue-denim-jacket.jpg" alt="Light blue denim jacket"><span>Denim jacket</span></a>
-            <a href="item.html#item-08"><img src="assets/images/olive-utility-jacket.jpg" alt="Olive utility jacket"><span>Utility jacket</span></a>
+          <div class="rt-compare-grid">
+            <figure class="rt-compare-card" data-tryon-pinned>
+              <p class="rt-eyebrow">PINNED LOOK</p>
+              <div class="rt-compare-figure" data-look-figure></div>
+              <figcaption><span data-look-caption></span><span class="rt-compare-fit" data-look-fit></span></figcaption>
+            </figure>
+            <figure class="rt-compare-card" data-tryon-current>
+              <p class="rt-eyebrow">CURRENT LOOK</p>
+              <div class="rt-compare-figure" data-look-figure></div>
+              <figcaption><span data-look-caption></span><span class="rt-compare-fit" data-look-fit></span></figcaption>
+            </figure>
           </div>
-        </div>
+        </section>
       </section>
 
       <section class="rt-privacy-note" aria-labelledby="tryon-privacy-heading">
         <p class="rt-eyebrow">DESIGNED WITH CARE</p>
         <h2 id="tryon-privacy-heading">Your image stays yours.</h2>
-        <p>This demonstration does not access a camera, request a personal photo, upload an image, or connect to an AI service. A future prototype should explain image handling before asking for permission.</p>
+        <p>This demonstration does not access a camera, request a personal photo, upload an image, or connect to an AI service. The fit estimate comes only from comparing the listed size with the sample model's size. A future prototype should explain image handling before asking for permission.</p>
       </section>
       <a class="rt-back-link" href="index.html#clothes">← Back to Explore</a>
     </main>
@@ -80,5 +109,6 @@
         <span>Classroom prototype · Sample listings only</span>
       </div>
     </footer>
+    <script src="tryon.js"></script>
   </body>
 </html>

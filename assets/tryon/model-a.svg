@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 480" width="240" height="480" role="img" aria-label="Model A, size S, slim build">
+  <title>Model A, size S, slim build</title>
+  <path d="M96 52 Q94 32 120 31 Q146 32 144 52 L148 118 Q120 126 92 118 Z" fill="#3B2A20"/>
+  <path d="M122 246 L154 242 L146.7 440 L125 440 Z M118 246 L86 242 L93.3 440 L115 440 Z" fill="#F1C9A5"/>
+  <ellipse cx="135.85" cy="446" rx="13" ry="6" fill="#3A332C"/><ellipse cx="104.15" cy="446" rx="13" ry="6" fill="#3A332C"/>
+  <path d="M144.0 102.0 L156.0 104.0 L164.0 118.0 L172.0 206.0 L175.0 292.0 L175.0 292.0 L163.0 294.0 L160.0 206.0 L152.0 150.0 Z" fill="#F1C9A5"/>
+  <path d="M96.0 102.0 L84.0 104.0 L76.0 118.0 L68.0 206.0 L65.0 292.0 L65.0 292.0 L77.0 294.0 L80.0 206.0 L88.0 150.0 Z" fill="#F1C9A5"/>
+  <circle cx="169" cy="302" r="8" fill="#F1C9A5"/><circle cx="71" cy="302" r="8" fill="#F1C9A5"/>
+  <rect x="110" y="74" width="20" height="26" fill="#F1C9A5"/><circle cx="120" cy="58" r="24" fill="#F1C9A5"/>
+  <path d="M108 94 L132 94 Q154 98 160 116 L154 150 Q145 172 146 196 Q147 220 154 242 L154 250 L86 250 L86 242 Q93 220 94 196 Q95 172 86 150 L80 116 Q86 98 108 94 Z" fill="#D9D1C3"/>
+  <path d="M86 236 L154 236 L152.2 292 L123 292 L120 268 L117 292 L87.8 292 Z" fill="#8A8274"/>
+  <path d="M96 60 Q96 30 120 30 Q144 30 144 60 Q136 44 120 44 Q104 44 96 60 Z" fill="#3B2A20"/>
+</svg>
