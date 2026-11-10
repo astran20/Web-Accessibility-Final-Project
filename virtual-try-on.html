@@ -99,6 +99,42 @@
         </section>
       </section>
 
+      <section class="rt-assistant" aria-labelledby="assistant-heading" data-assistant>
+        <div class="rt-assistant-intro">
+          <p class="rt-eyebrow">STYLE ASSISTANT</p>
+          <h2 id="assistant-heading">Not sure what to try? Ask.</h2>
+          <p>Describe what you want in your own words, such as the type of piece, size, color, budget or occasion, and the assistant will suggest pieces from the local edit.</p>
+          <p class="rt-demo-label">Simulated AI — simple keyword matching, no real AI model</p>
+        </div>
+
+        <noscript><p class="rt-tryon-noscript">The style assistant needs JavaScript. You can still browse every piece on the <a href="index.html#clothes">Explore page</a>.</p></noscript>
+
+        <div class="rt-chat">
+          <ol class="rt-chat-log" role="log" aria-live="polite" aria-label="Conversation with the style assistant" tabindex="0" data-assistant-log></ol>
+
+          <div class="rt-chat-suggestions">
+            <p id="assistant-suggestions-label">Try asking:</p>
+            <ul aria-labelledby="assistant-suggestions-label">
+              <li><button class="rt-chip" type="button" data-assistant-chip>Warm jacket under $70, size M</button></li>
+              <li><button class="rt-chip" type="button" data-assistant-chip>Something for work</button></li>
+              <li><button class="rt-chip" type="button" data-assistant-chip>Casual blue denim</button></li>
+              <li><button class="rt-chip" type="button" data-assistant-chip>A dress for a summer date</button></li>
+            </ul>
+          </div>
+
+          <form class="rt-chat-form" novalidate data-assistant-form>
+            <div class="rt-form-field" data-assistant-field>
+              <label for="assistant-input">Your question</label>
+              <div class="rt-chat-input-row">
+                <input id="assistant-input" type="text" autocomplete="off" placeholder="e.g. green jacket for work under $80" aria-describedby="assistant-error" data-assistant-input>
+                <button class="rt-button rt-button-primary" type="submit">Ask</button>
+              </div>
+              <p class="rt-field-error" id="assistant-error" hidden data-assistant-error>Type a question first, or tap one of the suggestions.</p>
+            </div>
+          </form>
+        </div>
+      </section>
+
       <section class="rt-privacy-note" aria-labelledby="tryon-privacy-heading">
         <p class="rt-eyebrow">DESIGNED WITH CARE</p>
         <h2 id="tryon-privacy-heading">Your image stays yours.</h2>
@@ -115,5 +151,6 @@
       </div>
     </footer>
     <script src="tryon.js"></script>
+    <script src="assistant.js"></script>
   </body>
 </html>

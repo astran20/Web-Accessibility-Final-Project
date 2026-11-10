@@ -8,21 +8,29 @@
   // Mirrors the 8 Explore cards in index.html. Replace with Charlie's items endpoint once it exists.
   // `look` describes how each piece is illustrated on the figure; colours are sampled from the listing photo.
   var ITEMS = [
-    { id: "item-01", name: "Brown Leather Jacket", category: "outerwear", size: "M", price: 68, store: "Second Story Vintage", image: "assets/images/brown-jacket.jpg",
+    { id: "item-01", name: "Brown Leather Jacket", category: "outerwear", size: "M", price: 68, store: "Second Story Vintage", colors: ["brown"], tags: ["warm", "leather", "vintage", "layering", "casual", "going-out"],
+      image: "assets/images/brown-jacket.jpg",
       look: { kind: "jacket", fabric: "leather", base: "#6E4130", light: "#93604A", dark: "#4A2A1E", line: "#33190F", hem: 274, open: true, inner: "#7A2E2E", lapels: true, pockets: "welt", buttons: [176, 212] } },
-    { id: "item-02", name: "Cream Knit Sweater", category: "tops", size: "M", price: 48, store: "Juniper & Thread", image: "assets/images/cream-knit-sweater.jpg",
+    { id: "item-02", name: "Cream Knit Sweater", category: "tops", size: "M", price: 48, store: "Juniper & Thread", colors: ["cream", "beige", "neutral"], tags: ["warm", "knit", "casual", "layering"],
+      image: "assets/images/cream-knit-sweater.jpg",
       look: { kind: "top", fabric: "knit", base: "#CBB99C", dark: "#A8957A", line: "#8A785D", hem: 256, neck: "crew", rib: true } },
-    { id: "item-03", name: "Blue Denim Jacket", category: "outerwear", size: "S", price: 84, store: "North Loop Archive", image: "assets/images/blue-denim-jacket.jpg",
+    { id: "item-03", name: "Blue Denim Jacket", category: "outerwear", size: "S", price: 84, store: "North Loop Archive", colors: ["blue"], tags: ["denim", "casual", "layering", "warm"],
+      image: "assets/images/blue-denim-jacket.jpg",
       look: { kind: "jacket", fabric: "denim", base: "#93AECB", light: "#B3C7DC", dark: "#7894B4", line: "#56708F", hem: 262, collar: "sherpa", chestPockets: true, waistband: true, stitch: "#C9925A", buttons: [122, 152, 182, 212, 242] } },
-    { id: "item-04", name: "Blue Stripe Shirt", category: "tops", size: "M", price: 24, store: "Second Story Vintage", image: "assets/images/blue-stripe-shirt.jpg",
+    { id: "item-04", name: "Blue Stripe Shirt", category: "tops", size: "M", price: 24, store: "Second Story Vintage", colors: ["blue", "white"], tags: ["shirt", "work", "casual", "summer"],
+      image: "assets/images/blue-stripe-shirt.jpg",
       look: { kind: "top", fabric: "stripe", base: "#E8EEF7", dark: "#7F98C4", line: "#6A80A8", hem: 262, neck: "high", collar: "shirt", placket: true, cuffs: true } },
-    { id: "item-05", name: "Rust Floral Dress", category: "dresses", size: "S", price: 56, store: "Juniper & Thread", image: "assets/images/rust-floral-dress.jpg",
+    { id: "item-05", name: "Rust Floral Dress", category: "dresses", size: "S", price: 56, store: "Juniper & Thread", colors: ["rust", "orange", "red"], tags: ["floral", "going-out", "summer", "vintage"],
+      image: "assets/images/rust-floral-dress.jpg",
       look: { kind: "dress", fabric: "floral", base: "#A9533A", light: "#EFE2CE", dark: "#7E3A26", line: "#5E2716", hem: 340 } },
-    { id: "item-06", name: "Vintage Blue Jeans", category: "denim", size: "M", price: 49, store: "North Loop Archive", image: "assets/images/vintage-blue-jeans.jpg",
+    { id: "item-06", name: "Vintage Blue Jeans", category: "denim", size: "M", price: 49, store: "North Loop Archive", colors: ["blue"], tags: ["denim", "casual", "vintage"],
+      image: "assets/images/vintage-blue-jeans.jpg",
       look: { kind: "jeans", fabric: "denim", base: "#6F8FB2", light: "#A4BCD6", dark: "#56769A", line: "#3F5878", stitch: "#C9925A" } },
-    { id: "item-07", name: "Checked Blazer", category: "outerwear", size: "L", price: 74, store: "Second Story Vintage", image: "assets/images/checked-blazer.jpg",
+    { id: "item-07", name: "Checked Blazer", category: "outerwear", size: "L", price: 74, store: "Second Story Vintage", colors: ["green"], tags: ["tailored", "work", "vintage", "layering"],
+      image: "assets/images/checked-blazer.jpg",
       look: { kind: "jacket", fabric: "houndstooth", base: "#9AA677", dark: "#2F3A27", line: "#232C1C", hem: 280, open: true, inner: "#F3EEE2", lapels: true, pockets: "flap", buttons: [186] } },
-    { id: "item-08", name: "Olive Utility Jacket", category: "outerwear", size: "L", price: 62, store: "North Loop Archive", image: "assets/images/olive-utility-jacket.jpg",
+    { id: "item-08", name: "Olive Utility Jacket", category: "outerwear", size: "L", price: 62, store: "North Loop Archive", colors: ["green", "olive"], tags: ["casual", "layering", "utility"],
+      image: "assets/images/olive-utility-jacket.jpg",
       look: { kind: "jacket", fabric: "twill", base: "#5A6D42", light: "#6E8352", dark: "#475932", line: "#2C391C", hem: 268, collar: "shirt", chestPockets: true, stitch: "#7E9160", buttons: [114, 142, 170, 198, 226, 254] } }
   ];
 
@@ -433,6 +441,8 @@
     return { svg: svg, fit: fit };
   }
 
+  window.RETHREAD_TRYON = { items: ITEMS, tryItem: null };
+
   // ---- Favorites (shared localStorage key so other pages can read it) ----
 
   function readFavorites() {
@@ -598,6 +608,16 @@
       status.textContent = "Comparison cleared.";
       pinButton.focus();
     });
+
+    window.RETHREAD_TRYON.tryItem = function (id) {
+      var item = find(ITEMS, id);
+      if (!item) return;
+      state.item = item;
+      runTryOn();
+      var stacked = window.matchMedia("(max-width: 760px)").matches;
+      root.querySelector(stacked ? ".rt-tryon-result" : ".rt-tryon-layout").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+      root.querySelector('input[name="tryon-item"][value="' + id + '"]').focus({ preventScroll: true });
+    };
 
     root.classList.add("is-ready");
     syncChoices();
