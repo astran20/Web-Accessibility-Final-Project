@@ -530,7 +530,8 @@ body:has(.rt-assistant-launcher:not([hidden])) .rt-footer { padding-bottom: 5rem
 .rt-assistant-launcher:hover { background: #2B4535; }
 .rt-assistant-launcher:focus-visible,
 .rt-assistant-close:focus-visible { outline: 3px solid var(--rt-caramel); outline-offset: 3px; }
-.rt-assistant-panel { position: fixed; right: 1.5rem; bottom: 5.5rem; z-index: 41; width: min(400px, calc(100vw - 2rem)); max-height: min(640px, calc(100vh - 7.5rem)); display: flex; flex-direction: column; border: 1px solid var(--rt-line); border-radius: 10px; background: #fbf9f6; box-shadow: 0 16px 40px rgba(30, 45, 36, 0.25); overflow: hidden; animation: rt-panel-in 180ms ease-out; }
+body.rt-assistant-open .rt-assistant-launcher { display: none; }
+.rt-assistant-panel { position: fixed; right: 1.5rem; bottom: 1.5rem; z-index: 41; width: min(420px, calc(100vw - 2rem)); height: min(680px, calc(100vh - 3rem)); display: flex; flex-direction: column; border: 1px solid var(--rt-line); border-radius: 10px; background: #fbf9f6; box-shadow: 0 16px 40px rgba(30, 45, 36, 0.25); overflow: hidden; animation: rt-panel-in 180ms ease-out; }
 .rt-assistant-panel[hidden] { display: none; }
 @keyframes rt-panel-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 .rt-assistant-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.8rem; padding: 0.9rem 1rem; background: var(--rt-green); color: var(--rt-paper); }
@@ -673,8 +674,7 @@ body:has(.rt-assistant-launcher:not([hidden])) .rt-footer { padding-bottom: 5rem
   .rt-tryon-compare { padding: 1.1rem 1.2rem 1.2rem; }
   .rt-compare-figure { height: 220px; }
   .rt-assistant-launcher { right: 1rem; bottom: 1rem; }
-  .rt-assistant-panel { inset: auto 0 0 0; width: 100%; max-height: 88vh; border-radius: 12px 12px 0 0; }
-  body.rt-assistant-open .rt-assistant-launcher { display: none; }
+  .rt-assistant-panel { inset: auto 0 0 0; width: 100%; height: 88vh; border-radius: 12px 12px 0 0; }
   .rt-chat-log { padding: 0.7rem; }
   .rt-msg { max-width: 100%; }
   .rt-rec { grid-template-columns: 56px minmax(0, 1fr); }
