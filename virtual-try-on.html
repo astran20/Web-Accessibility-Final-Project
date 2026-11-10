@@ -34,6 +34,10 @@
           <p class="rt-eyebrow">THE FITTING PREVIEW</p>
           <h2 id="tryon-board-heading">Try a piece on a sample model.</h2>
           <p>Choose a model, then a piece. The preview draws an illustrated version of the piece on the figure, sized to the model, and estimates the fit. Pin a look to compare it with another.</p>
+          <p class="rt-assistant-prompt" hidden data-assistant-prompt>
+            <span>Not sure what to try?</span>
+            <button class="rt-button rt-button-secondary" type="button" aria-expanded="false" aria-controls="style-assistant" data-assistant-open>Ask the style assistant</button>
+          </p>
         </div>
 
         <noscript><p class="rt-tryon-noscript">The try-on preview needs JavaScript. You can still browse every piece on the <a href="index.html#clothes">Explore page</a>.</p></noscript>
@@ -99,42 +103,6 @@
         </section>
       </section>
 
-      <section class="rt-assistant" aria-labelledby="assistant-heading" data-assistant>
-        <div class="rt-assistant-intro">
-          <p class="rt-eyebrow">STYLE ASSISTANT</p>
-          <h2 id="assistant-heading">Not sure what to try? Ask.</h2>
-          <p>Describe what you want in your own words, such as the type of piece, size, color, budget or occasion, and the assistant will suggest pieces from the local edit.</p>
-          <p class="rt-demo-label">Simulated AI — simple keyword matching, no real AI model</p>
-        </div>
-
-        <noscript><p class="rt-tryon-noscript">The style assistant needs JavaScript. You can still browse every piece on the <a href="index.html#clothes">Explore page</a>.</p></noscript>
-
-        <div class="rt-chat">
-          <ol class="rt-chat-log" role="log" aria-live="polite" aria-label="Conversation with the style assistant" tabindex="0" data-assistant-log></ol>
-
-          <div class="rt-chat-suggestions">
-            <p id="assistant-suggestions-label">Try asking:</p>
-            <ul aria-labelledby="assistant-suggestions-label">
-              <li><button class="rt-chip" type="button" data-assistant-chip>Warm jacket under $70, size M</button></li>
-              <li><button class="rt-chip" type="button" data-assistant-chip>Something for work</button></li>
-              <li><button class="rt-chip" type="button" data-assistant-chip>Casual blue denim</button></li>
-              <li><button class="rt-chip" type="button" data-assistant-chip>A dress for a summer date</button></li>
-            </ul>
-          </div>
-
-          <form class="rt-chat-form" novalidate data-assistant-form>
-            <div class="rt-form-field" data-assistant-field>
-              <label for="assistant-input">Your question</label>
-              <div class="rt-chat-input-row">
-                <input id="assistant-input" type="text" autocomplete="off" placeholder="e.g. green jacket for work under $80" aria-describedby="assistant-error" data-assistant-input>
-                <button class="rt-button rt-button-primary" type="submit">Ask</button>
-              </div>
-              <p class="rt-field-error" id="assistant-error" hidden data-assistant-error>Type a question first, or tap one of the suggestions.</p>
-            </div>
-          </form>
-        </div>
-      </section>
-
       <section class="rt-privacy-note" aria-labelledby="tryon-privacy-heading">
         <p class="rt-eyebrow">DESIGNED WITH CARE</p>
         <h2 id="tryon-privacy-heading">Your image stays yours.</h2>
@@ -142,6 +110,46 @@
       </section>
       <a class="rt-back-link" href="index.html#clothes">← Back to Explore</a>
     </main>
+
+    <button class="rt-assistant-launcher" type="button" aria-expanded="false" aria-controls="style-assistant" hidden data-assistant-open>
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.2 3.6c-.5.4-1.3.1-1.3-.6V16A2.5 2.5 0 0 1 4 13.5z"/></svg>
+      <span>Ask the style assistant</span>
+    </button>
+
+    <aside class="rt-assistant-panel" id="style-assistant" aria-labelledby="assistant-heading" hidden data-assistant>
+      <div class="rt-assistant-header">
+        <div>
+          <h2 id="assistant-heading">Style assistant</h2>
+          <p class="rt-assistant-label">Simulated AI — simple keyword matching, no real AI model</p>
+        </div>
+        <button class="rt-assistant-close" type="button" aria-label="Close style assistant" data-assistant-close>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+
+      <ol class="rt-chat-log" role="log" aria-live="polite" aria-label="Conversation with the style assistant" tabindex="0" data-assistant-log></ol>
+
+      <div class="rt-chat-suggestions">
+        <p id="assistant-suggestions-label">Try asking:</p>
+        <ul aria-labelledby="assistant-suggestions-label">
+          <li><button class="rt-chip" type="button" data-assistant-chip>Warm jacket under $70, size M</button></li>
+          <li><button class="rt-chip" type="button" data-assistant-chip>Something for work</button></li>
+          <li><button class="rt-chip" type="button" data-assistant-chip>Casual blue denim</button></li>
+          <li><button class="rt-chip" type="button" data-assistant-chip>A dress for a summer date</button></li>
+        </ul>
+      </div>
+
+      <form class="rt-chat-form" novalidate data-assistant-form>
+        <div class="rt-form-field" data-assistant-field>
+          <label class="rt-visually-hidden" for="assistant-input">Ask the style assistant</label>
+          <div class="rt-chat-input-row">
+            <input id="assistant-input" type="text" autocomplete="off" placeholder="e.g. green jacket for work under $80" aria-describedby="assistant-error" data-assistant-input>
+            <button class="rt-button rt-button-primary" type="submit">Ask</button>
+          </div>
+          <p class="rt-field-error" id="assistant-error" hidden data-assistant-error>Type a question first, or tap one of the suggestions.</p>
+        </div>
+      </form>
+    </aside>
 
     <footer class="rt-footer">
       <div class="rt-container rt-footer-inner">

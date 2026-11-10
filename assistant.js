@@ -190,8 +190,9 @@
       tryButton.type = "button";
       tryButton.setAttribute("aria-label", "Try on " + item.name);
       tryButton.addEventListener("click", function () {
-        if (window.RETHREAD_TRYON.tryItem) window.RETHREAD_TRYON.tryItem(item.id);
-        else window.location.href = "virtual-try-on.html?item=" + item.id;
+        if (!window.RETHREAD_TRYON.tryItem) { window.location.href = "virtual-try-on.html?item=" + item.id; return; }
+        closePanel(false);
+        window.RETHREAD_TRYON.tryItem(item.id);
       });
       var view = node("a", "rt-button rt-button-secondary rt-rec-button", "View");
       view.href = "item.html#" + item.id;
@@ -260,8 +261,44 @@
       });
     });
 
-    addMessage("bot", ["Hi! Tell me what you're looking for: a type of piece, size, color, budget or occasion. I'll suggest pieces from the local shops that you can try on above."]);
-    root.classList.add("is-ready");
+    var openers = document.querySelectorAll("[data-assistant-open]");
+    var launcher = document.querySelector(".rt-assistant-launcher");
+    var lastOpener = launcher;
+
+    function openPanel(opener) {
+      lastOpener = opener || launcher;
+      root.hidden = false;
+      document.body.classList.add("rt-assistant-open");
+      openers.forEach(function (b) { b.setAttribute("aria-expanded", "true"); });
+      var last = log.lastElementChild;
+      if (last) log.scrollTop = Math.max(0, last.offsetTop - 12);
+      input.focus();
+    }
+
+    function closePanel(returnFocus) {
+      if (root.hidden) return;
+      root.hidden = true;
+      document.body.classList.remove("rt-assistant-open");
+      openers.forEach(function (b) { b.setAttribute("aria-expanded", "false"); });
+      setError(false);
+      if (returnFocus && lastOpener) lastOpener.focus();
+    }
+
+    openers.forEach(function (b) {
+      b.addEventListener("click", function () {
+        if (b === launcher && !root.hidden) closePanel(true);
+        else openPanel(b);
+      });
+    });
+    root.querySelector("[data-assistant-close]").addEventListener("click", function () { closePanel(true); });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && !root.hidden) closePanel(true);
+    });
+
+    addMessage("bot", ["Hi! Tell me what you're looking for: a type of piece, size, color, budget or occasion. I'll suggest pieces from the local shops, and you can put any of them on a model in the preview."]);
+    launcher.hidden = false;
+    var prompt = document.querySelector("[data-assistant-prompt]");
+    if (prompt) prompt.hidden = false;
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
