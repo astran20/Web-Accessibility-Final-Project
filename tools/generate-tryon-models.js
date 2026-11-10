@@ -1,51 +1,62 @@
-// Regenerates assets/tryon/model-*.svg from the body geometry in tryon.js.
-// Run after changing any body measurement or garment shape: node tools/generate-tryon-models.js
+// Regenerates assets/tryon/model-*.svg from the models and body geometry in tryon.js.
+// Run after changing anything between the figure-geometry markers: node tools/generate-tryon-models.js
 const fs = require("fs");
 const path = require("path");
 
 const root = path.join(__dirname, "..");
 const src = fs.readFileSync(path.join(root, "tryon.js"), "utf8");
-const geometry = src.slice(src.indexOf("var CX = 120;"), src.indexOf("function garmentShapes"));
-const { torsoPath, sleevePaths } = new Function(geometry + "; return { torsoPath, sleevePaths };")();
+const geometry = src.slice(src.indexOf("// figure-geometry:start"), src.indexOf("// figure-geometry:end"));
+const g = new Function(geometry + "; return { CX, BASE_TEE, BASE_SHORTS, MODELS, armJoints, legJoints, limbAt, limbPath, torsoPath, bottomsPath };")();
+const { CX } = g;
 
-// Body values must match MODELS in tryon.js.
-const models = [
-  { id: "a", label: "Model A, size S, slim build", body: { s: 40, w: 26, h: 34, a: 0 }, skin: "#F1C9A5", hair: "#3B2A20", style: "long" },
-  { id: "b", label: "Model B, size M, average build", body: { s: 46, w: 33, h: 38, a: 1 }, skin: "#8D5A3B", hair: "#1D1A18", style: "short" },
-  { id: "c", label: "Model C, size L, curvy build", body: { s: 46, w: 38, h: 50, a: 3 }, skin: "#C68B5E", hair: "#2A1D15", style: "bun" },
-  { id: "d", label: "Model D, size XL, plus-size build", body: { s: 54, w: 48, h: 56, a: 5 }, skin: "#5E3B28", hair: "#141210", style: "curly" }
-];
-
-const CX = 120;
-const outDir = path.join(root, "assets", "tryon");
-fs.mkdirSync(outDir, { recursive: true });
-
-for (const m of models) {
-  const b = m.body;
-  const ankle = b.h * 0.55 + 8;
-  const shortsX = b.h + (ankle - b.h) * (50 / 198);
-  const hand = b.s + 9 + b.a / 2;
-  const parts = [];
-  if (m.style === "long") parts.push(`<path d="M96 52 Q94 32 120 31 Q146 32 144 52 L148 118 Q120 126 92 118 Z" fill="${m.hair}"/>`);
-  parts.push(`<path d="M${CX + 2} 246 L${CX + b.h} 242 L${CX + ankle} 440 L${CX + 5} 440 Z M${CX - 2} 246 L${CX - b.h} 242 L${CX - ankle} 440 L${CX - 5} 440 Z" fill="${m.skin}"/>`);
-  parts.push(`<ellipse cx="${CX + (ankle + 5) / 2}" cy="446" rx="13" ry="6" fill="#3A332C"/><ellipse cx="${CX - (ankle + 5) / 2}" cy="446" rx="13" ry="6" fill="#3A332C"/>`);
-  for (const d of sleevePaths(b, 0, 294)) parts.push(`<path d="${d}" fill="${m.skin}"/>`);
-  parts.push(`<circle cx="${CX + hand}" cy="302" r="8" fill="${m.skin}"/><circle cx="${CX - hand}" cy="302" r="8" fill="${m.skin}"/>`);
-  parts.push(`<rect x="110" y="74" width="20" height="26" fill="${m.skin}"/><circle cx="120" cy="58" r="24" fill="${m.skin}"/>`);
-  parts.push(`<path d="${torsoPath(b, 0, 250)}" fill="#D9D1C3"/>`);
-  parts.push(`<path d="M${CX - b.h} 236 L${CX + b.h} 236 L${(CX + shortsX).toFixed(1)} 292 L${CX + 3} 292 L${CX} 268 L${CX - 3} 292 L${(CX - shortsX).toFixed(1)} 292 Z" fill="#8A8274"/>`);
-  if (m.style === "curly") {
+function hair(m, layer) {
+  if (m.hairStyle === "long") {
+    return layer === "back"
+      ? `<path d="M98 52 Q98 28 120 28 Q142 28 142 52 L146 122 Q120 130 94 122 Z" fill="${m.hair}"/>`
+      : `<path d="M98 56 Q98 28 120 28 Q142 28 142 56 Q134 40 120 41 Q106 40 98 56 Z" fill="${m.hair}"/>`;
+  }
+  if (layer === "back") return "";
+  if (m.hairStyle === "curly") {
     const curls = [];
     for (let deg = 190; deg <= 350; deg += 20) {
       const r = (deg * Math.PI) / 180;
-      curls.push(`<circle cx="${(120 + 26 * Math.cos(r)).toFixed(1)}" cy="${(54 + 26 * Math.sin(r)).toFixed(1)}" r="10"/>`);
+      curls.push(`<circle cx="${(120 + 20 * Math.cos(r)).toFixed(1)}" cy="${(56 + 21 * Math.sin(r)).toFixed(1)}" r="9"/>`);
     }
-    parts.push(`<g fill="${m.hair}">${curls.join("")}</g>`);
-  } else {
-    parts.push(`<path d="M96 60 Q96 30 120 30 Q144 30 144 60 Q136 44 120 44 Q104 44 96 60 Z" fill="${m.hair}"/>`);
-    if (m.style === "bun") parts.push(`<circle cx="120" cy="25" r="12" fill="${m.hair}"/>`);
+    return `<g fill="${m.hair}"><path d="M100 56 Q100 33 120 33 Q140 33 140 56 Q132 44 120 45 Q108 44 100 56 Z"/>${curls.join("")}</g>`;
   }
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 480" width="240" height="480" role="img" aria-label="${m.label}">\n  <title>${m.label}</title>\n  ${parts.join("\n  ")}\n</svg>\n`;
+  const cap = `<path d="M99 53 Q100 29 120 29 Q140 29 141 53 Q136 38 120 39 Q104 38 99 53 Z" fill="${m.hair}"/>`;
+  return m.hairStyle === "bun" ? cap + `<circle cx="120" cy="24" r="11" fill="${m.hair}"/>` : cap;
+}
+
+const outDir = path.join(root, "assets", "tryon");
+fs.mkdirSync(outDir, { recursive: true });
+
+for (const m of g.MODELS) {
+  const b = m.body;
+  const label = `${m.name}, size ${m.size}, ${m.build.toLowerCase()}`;
+  const arm = g.armJoints(b);
+  const legs = g.legJoints(b);
+  const wrist = arm[arm.length - 1];
+  const ankle = legs[legs.length - 1];
+  const capTop = g.limbAt(arm, 114);
+  const parts = [hair(m, "back")];
+  for (const side of [1, -1]) {
+    parts.push(`<path d="${g.limbPath(legs, side, 0, 242, 438)}" fill="${m.skin}"/>`);
+    parts.push(`<ellipse cx="${CX + side * (ankle[0] + 3)}" cy="442" rx="11" ry="5.5" fill="#3A332C"/>`);
+    parts.push(`<circle cx="${CX + side * capTop[0]}" cy="114" r="${capTop[1]}" fill="${m.skin}"/>`);
+    parts.push(`<path d="${g.limbPath(arm, side, 0, 110, 286)}" fill="${m.skin}"/>`);
+    parts.push(`<ellipse cx="${CX + side * (wrist[0] + 1)}" cy="294" rx="6" ry="9" fill="${m.skin}"/>`);
+  }
+  parts.push(`<path d="M111 72 L129 72 L131 98 L109 98 Z" fill="${m.skin}"/>`);
+  parts.push(`<ellipse cx="120" cy="56" rx="21" ry="25" fill="${m.skin}"/>`);
+  parts.push(`<path d="${g.bottomsPath(b, 0, 292)}" fill="${g.BASE_SHORTS}"/>`);
+  for (const side of [1, -1]) {
+    parts.push(`<circle cx="${CX + side * capTop[0]}" cy="114" r="${capTop[1] + 1}" fill="${g.BASE_TEE}"/>`);
+    parts.push(`<path d="${g.limbPath(arm, side, 1, 110, 140)}" fill="${g.BASE_TEE}"/>`);
+  }
+  parts.push(`<path d="${g.torsoPath(b, 0, 250, "high", 0)}" fill="${g.BASE_TEE}"/>`);
+  parts.push(hair(m, "front"));
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 480" width="240" height="480" role="img" aria-label="${label}">\n  <title>${label}</title>\n  ${parts.filter(Boolean).join("\n  ")}\n</svg>\n`;
   fs.writeFileSync(path.join(outDir, `model-${m.id}.svg`), svg);
 }
-console.log("Wrote " + models.length + " model figures to assets/tryon/");
+console.log("Wrote " + g.MODELS.length + " model figures to assets/tryon/");

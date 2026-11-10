@@ -493,6 +493,9 @@ h1, h2, h3, p { margin-top: 0; }
 .rt-tryon-stage { height: 420px; display: grid; place-items: center; padding: 0.8rem; transition: opacity 200ms ease, filter 200ms ease; }
 .rt-tryon-stage svg { width: auto; height: 100%; max-width: 100%; }
 .rt-tryon-stage.is-loading { opacity: 0.35; filter: blur(2px); }
+.rt-tryon-reference { position: absolute; top: 0.6rem; right: 0.6rem; width: 84px; padding: 0.3rem; border: 1px solid var(--rt-line); background: var(--rt-paper); }
+.rt-tryon-reference img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
+.rt-tryon-reference span { display: block; margin-top: 0.2rem; color: var(--rt-muted); font-size: 0.68rem; text-align: center; }
 .rt-tryon-progress { position: absolute; top: 50%; left: 50%; margin: 0; padding: 0.55rem 0.8rem; transform: translate(-50%, -50%); border-left: 3px solid var(--rt-caramel); background: var(--rt-paper); color: var(--rt-ink); font-size: 0.85rem; font-weight: 700; white-space: nowrap; }
 .rt-tryon-figure figcaption { padding: 0.55rem 0.75rem; border-top: 1px solid var(--rt-line); background: var(--rt-paper); color: var(--rt-muted); font-size: 0.8rem; }
 .rt-fit-summary { margin: 1rem 0; padding: 0.9rem 1rem; border-left: 4px solid var(--rt-green); background: var(--rt-paper); }
@@ -610,6 +613,7 @@ h1, h2, h3, p { margin-top: 0; }
   .rt-choice-grid-models,
   .rt-choice-grid-items { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .rt-tryon-stage { height: 360px; }
+  .rt-tryon-reference { width: 64px; }
   .rt-tryon-compare { padding: 1.1rem 1.2rem 1.2rem; }
   .rt-compare-figure { height: 220px; }
   .rt-footer-inner { display: grid; grid-template-columns: 1fr; gap: 0.6rem; }
