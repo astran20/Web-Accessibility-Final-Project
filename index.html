@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#F6F3EC">
+    <meta name="description" content="Discover one-of-a-kind secondhand clothing at independent neighborhood shops.">
+    <title>RETHREAD — Secondhand, found locally</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="rethread-site">
+    <a class="rt-skip-link" href="#main-content">Skip to main content</a>
+    <header class="rt-header">
+      <div class="rt-header-inner">
+        <a class="rt-wordmark" href="index.html" aria-label="RETHREAD home">RETHREAD<span aria-hidden="true">.</span></a>
+        <nav class="rt-nav" aria-label="Main navigation">
+          <a href="index.html#clothes" aria-current="page">Explore</a>
+          <a href="stores.html">Stores</a>
+          <a href="favorites.html">Favorites</a>
+          <a href="virtual-try-on.html">Virtual Try-On</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section class="rt-hero rt-container" aria-labelledby="hero-title">
+        <div class="rt-hero-copy">
+          <p class="rt-eyebrow">GOOD CLOTHES, FOUND CLOSE BY</p>
+          <h1 id="hero-title">A second life<br>looks good on you.</h1>
+          <p class="rt-lede">Find pre-loved pieces and independent vintage shops, all in one thoughtful edit.</p>
+          <a class="rt-button rt-button-primary" href="#clothes">Explore clothes <span aria-hidden="true">→</span></a>
+          <p class="rt-demo-note">A classroom concept with sample listings and store details.</p>
+        </div>
+        <figure class="rt-hero-image">
+          <img src="assets/images/hero-vintage-shop.jpg" alt="A warm independent clothing shop with wooden shelving, a vintage chair, and a rail of garments">
+          <figcaption>Wear it again. Make it yours.</figcaption>
+          <span class="rt-photo-note">Illustrative shop photo</span>
+        </figure>
+      </section>
+
+      <section class="rt-browse rt-container" id="clothes" aria-labelledby="browse-title">
+        <div class="rt-section-heading">
+          <div>
+            <p class="rt-eyebrow">THE LOCAL EDIT</p>
+            <h2 id="browse-title">Pieces with a past. Room for a next.</h2>
+          </div>
+          <p class="rt-demo-note">All inventory and prices are sample data.</p>
+        </div>
+
+        <div class="rt-filter-panel" aria-label="Search and filter clothing">
+          <div class="rt-search-field">
+            <label for="clothes-search">Search clothes</label>
+            <input id="clothes-search" name="search" type="search" placeholder="Try “leather jacket”" autocomplete="off" data-search-clothes>
+          </div>
+          <div class="rt-filter-field">
+            <label for="filter-store">Store</label>
+            <select id="filter-store" name="store" data-filter-store>
+              <option value="">All stores</option>
+              <option value="second-story">Second Story Vintage</option>
+              <option value="juniper-thread">Juniper &amp; Thread</option>
+              <option value="north-loop">North Loop Archive</option>
+            </select>
+          </div>
+          <div class="rt-filter-field">
+            <label for="filter-category">Category</label>
+            <select id="filter-category" name="category" data-filter-category>
+              <option value="">All clothing</option>
+              <option value="outerwear">Outerwear</option>
+              <option value="tops">Tops</option>
+              <option value="dresses">Dresses</option>
+              <option value="denim">Denim</option>
+            </select>
+          </div>
+          <div class="rt-filter-field">
+            <label for="filter-size">Size</label>
+            <select id="filter-size" name="size" data-filter-size>
+              <option value="">All sizes</option>
+              <option value="S">Small</option>
+              <option value="M">Medium</option>
+              <option value="L">Large</option>
+            </select>
+          </div>
+          <div class="rt-filter-field">
+            <label for="filter-price">Price</label>
+            <select id="filter-price" name="price" data-filter-price>
+              <option value="">Any price</option>
+              <option value="0-25">Under $25</option>
+              <option value="25-50">$25–$50</option>
+              <option value="50-100">$50–$100</option>
+            </select>
+          </div>
+          <button class="rt-text-button rt-clear-filters" id="clear-filters" type="button" data-clear-filters>Clear filters</button>
+        </div>
+
+        <div class="rt-results-bar">
+          <p id="results-count" aria-live="polite">8 pieces</p>
+          <div class="rt-sort-field">
+            <label for="sort-items">Sort by</label>
+            <select id="sort-items" name="sort" data-sort-clothes>
+              <option value="featured">Featured</option>
+              <option value="price-low">Price: low to high</option>
+              <option value="price-high">Price: high to low</option>
+              <option value="recent">Recently added</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="rt-product-grid" id="product-grid">
+          <article class="rt-product-card" data-item-id="item-01" data-store="second-story" data-category="outerwear" data-size="M" data-price="68">
+            <div class="rt-product-image">
+              <a href="item.html#item-01" aria-label="View Brown Leather Jacket details">
+                <img src="assets/images/brown-jacket.jpg" alt="Brown leather jacket worn over a dark shirt" loading="lazy">
+              </a>
+              <button class="rt-favorite-button" type="button" data-favorite-toggle="item-01" aria-pressed="false" aria-label="Save Brown Leather Jacket to favorites">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 8.8c0 5.2-8.2 10.1-8.2 10.1S3.8 14 3.8 8.8a4.2 4.2 0 0 1 7.8-2.1 4.2 4.2 0 0 1 8.6 2.1Z"/></svg>
+              </button>
+            </div>
+            <div class="rt-product-info">
+              <div class="rt-product-title-row"><h3><a href="item.html#item-01">Brown Leather Jacket</a></h3><span class="rt-price">$68</span></div>
+              <p class="rt-product-meta">M <span aria-hidden="true">·</span> Good condition</p>
+              <a class="rt-store-link" href="stores.html#store-second-story">Second Story Vintage <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+          <article class="rt-product-card" data-item-id="item-02" data-store="juniper-thread" data-category="tops" data-size="M" data-price="48">
+            <div class="rt-product-image">
+              <a href="item.html#item-02" aria-label="View Cream Knit Sweater details">
+                <img src="assets/images/cream-knit-sweater.jpg" alt="Cream knit sweater hanging on a wooden hanger" loading="lazy">
+              </a>
+              <button class="rt-favorite-button" type="button" data-favorite-toggle="item-02" aria-pressed="false" aria-label="Save Cream Knit Sweater to favorites">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 8.8c0 5.2-8.2 10.1-8.2 10.1S3.8 14 3.8 8.8a4.2 4.2 0 0 1 7.8-2.1 4.2 4.2 0 0 1 8.6 2.1Z"/></svg>
+              </button>
+            </div>
+            <div class="rt-product-info">
+              <div class="rt-product-title-row"><h3><a href="item.html#item-02">Cream Knit Sweater</a></h3><span class="rt-price">$48</span></div>
+              <p class="rt-product-meta">M <span aria-hidden="true">·</span> Excellent condition</p>
+              <a class="rt-store-link" href="stores.html#store-juniper-thread">Juniper &amp; Thread <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+          <article class="rt-product-card" data-item-id="item-03" data-store="north-loop" data-category="outerwear" data-size="S" data-price="84">
+            <div class="rt-product-image">
+              <a href="item.html#item-03" aria-label="View Blue Denim Jacket details">
+                <img src="assets/images/blue-denim-jacket.jpg" alt="Light blue denim jacket hanging against a pale wall" loading="lazy">
+              </a>
+              <button class="rt-favorite-button" type="button" data-favorite-toggle="item-03" aria-pressed="false" aria-label="Save Blue Denim Jacket to favorites">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 8.8c0 5.2-8.2 10.1-8.2 10.1S3.8 14 3.8 8.8a4.2 4.2 0 0 1 7.8-2.1 4.2 4.2 0 0 1 8.6 2.1Z"/></svg>
+              </button>
+            </div>
+            <div class="rt-product-info">
+              <div class="rt-product-title-row"><h3><a href="item.html#item-03">Blue Denim Jacket</a></h3><span class="rt-price">$84</span></div>
+              <p class="rt-product-meta">S <span aria-hidden="true">·</span> Very good condition</p>
+              <a class="rt-store-link" href="stores.html#store-north-loop">North Loop Archive <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+          <article class="rt-product-card" data-item-id="item-04" data-store="second-story" data-category="tops" data-size="M" data-price="24">
+            <div class="rt-product-image">
+              <a href="item.html#item-04" aria-label="View Blue Stripe Shirt details">
+                <img src="assets/images/blue-stripe-shirt.jpg" alt="Blue and white shirts arranged on hangers, including a fine stripe" loading="lazy">
+              </a>
+              <button class="rt-favorite-button" type="button" data-favorite-toggle="item-04" aria-pressed="false" aria-label="Save Blue Stripe Shirt to favorites">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 8.8c0 5.2-8.2 10.1-8.2 10.1S3.8 14 3.8 8.8a4.2 4.2 0 0 1 7.8-2.1 4.2 4.2 0 0 1 8.6 2.1Z"/></svg>
+              </button>
+            </div>
+            <div class="rt-product-info">
+              <div class="rt-product-title-row"><h3><a href="item.html#item-04">Blue Stripe Shirt</a></h3><span class="rt-price">$24</span></div>
+              <p class="rt-product-meta">M <span aria-hidden="true">·</span> Good condition</p>
+              <a class="rt-store-link" href="stores.html#store-second-story">Second Story Vintage <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+          <article class="rt-product-card" data-item-id="item-05" data-store="juniper-thread" data-category="dresses" data-size="S" data-price="56">
+            <div class="rt-product-image">
+              <a href="item.html#item-05" aria-label="View Rust Floral Dress details">
+                <img src="assets/images/rust-floral-dress.jpg" alt="Rust-colored floral dress worn with a wide-brimmed hat" loading="lazy">
+              </a>
+              <button class="rt-favorite-button" type="button" data-favorite-toggle="item-05" aria-pressed="false" aria-label="Save Rust Floral Dress to favorites">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 8.8c0 5.2-8.2 10.1-8.2 10.1S3.8 14 3.8 8.8a4.2 4.2 0 0 1 7.8-2.1 4.2 4.2 0 0 1 8.6 2.1Z"/></svg>
+              </button>
+            </div>
+            <div class="rt-product-info">
+              <div class="rt-product-title-row"><h3><a href="item.html#item-05">Rust Floral Dress</a></h3><span class="rt-price">$56</span></div>
+              <p class="rt-product-meta">S <span aria-hidden="true">·</span> Excellent condition</p>
+              <a class="rt-store-link" href="stores.html#store-juniper-thread">Juniper &amp; Thread <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+          <article class="rt-product-card" data-item-id="item-06" data-store="north-loop" data-category="denim" data-size="M" data-price="49">
+            <div class="rt-product-image">
+              <a href="item.html#item-06" aria-label="View Vintage Blue Jeans details">
+                <img src="assets/images/vintage-blue-jeans.jpg" alt="Folded blue jeans arranged together on a dark surface" loading="lazy">
+              </a>
+              <button class="rt-favorite-button" type="button" data-favorite-toggle="item-06" aria-pressed="false" aria-label="Save Vintage Blue Jeans to favorites">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 8.8c0 5.2-8.2 10.1-8.2 10.1S3.8 14 3.8 8.8a4.2 4.2 0 0 1 7.8-2.1 4.2 4.2 0 0 1 8.6 2.1Z"/></svg>
+              </button>
+            </div>
+            <div class="rt-product-info">
+              <div class="rt-product-title-row"><h3><a href="item.html#item-06">Vintage Blue Jeans</a></h3><span class="rt-price">$49</span></div>
+              <p class="rt-product-meta">M <span aria-hidden="true">·</span> Good condition</p>
+              <a class="rt-store-link" href="stores.html#store-north-loop">North Loop Archive <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+          <article class="rt-product-card" data-item-id="item-07" data-store="second-story" data-category="outerwear" data-size="L" data-price="74">
+            <div class="rt-product-image">
+              <a href="item.html#item-07" aria-label="View Checked Blazer details">
+                <img src="assets/images/checked-blazer.jpg" alt="Model wearing a checked tailored blazer over a white shirt" loading="lazy">
+              </a>
+              <button class="rt-favorite-button" type="button" data-favorite-toggle="item-07" aria-pressed="false" aria-label="Save Checked Blazer to favorites">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 8.8c0 5.2-8.2 10.1-8.2 10.1S3.8 14 3.8 8.8a4.2 4.2 0 0 1 7.8-2.1 4.2 4.2 0 0 1 8.6 2.1Z"/></svg>
+              </button>
+            </div>
+            <div class="rt-product-info">
+              <div class="rt-product-title-row"><h3><a href="item.html#item-07">Checked Blazer</a></h3><span class="rt-price">$74</span></div>
+              <p class="rt-product-meta">L <span aria-hidden="true">·</span> Very good condition</p>
+              <a class="rt-store-link" href="stores.html#store-second-story">Second Story Vintage <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+          <article class="rt-product-card" data-item-id="item-08" data-store="north-loop" data-category="outerwear" data-size="L" data-price="62">
+            <div class="rt-product-image">
+              <a href="item.html#item-08" aria-label="View Olive Utility Jacket details">
+                <img src="assets/images/olive-utility-jacket.jpg" alt="Olive utility jacket with front pockets hanging on a dark wall" loading="lazy">
+              </a>
+              <button class="rt-favorite-button" type="button" data-favorite-toggle="item-08" aria-pressed="false" aria-label="Save Olive Utility Jacket to favorites">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 8.8c0 5.2-8.2 10.1-8.2 10.1S3.8 14 3.8 8.8a4.2 4.2 0 0 1 7.8-2.1 4.2 4.2 0 0 1 8.6 2.1Z"/></svg>
+              </button>
+            </div>
+            <div class="rt-product-info">
+              <div class="rt-product-title-row"><h3><a href="item.html#item-08">Olive Utility Jacket</a></h3><span class="rt-price">$62</span></div>
+              <p class="rt-product-meta">L <span aria-hidden="true">·</span> Good condition</p>
+              <a class="rt-store-link" href="stores.html#store-north-loop">North Loop Archive <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+        </div>
+
+        <section class="rt-empty-state" id="empty-results" aria-labelledby="empty-results-title" hidden>
+          <p class="rt-eyebrow">A QUIETER RACK</p>
+          <h2 id="empty-results-title">No pieces match just yet.</h2>
+          <p>Try a different search or clear a filter to see more local finds.</p>
+          <button class="rt-button rt-button-secondary" type="button" data-clear-filters>Clear filters</button>
+        </section>
+      </section>
+
+      <section class="rt-editorial-band">
+        <div class="rt-container rt-editorial-inner">
+          <p class="rt-eyebrow">A GOOD FIND, A SHORT WALK AWAY</p>
+          <h2>Independent shops.<br>More stories in every stitch.</h2>
+          <a class="rt-text-link" href="stores.html">Meet the neighborhood stores <span aria-hidden="true">→</span></a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="rt-footer">
+      <div class="rt-container rt-footer-inner">
+        <a class="rt-wordmark" href="index.html">RETHREAD<span aria-hidden="true">.</span></a>
+        <p>Find your next favorite, close to home.</p>
+        <span>Classroom prototype · Sample listings only</span>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,49 @@
+# RETHREAD prototype handoff
+
+## Files and local preview
+
+- `index.html` is the Explore page, sample inventory, filters, and no-results state.
+- `stores.html` lists three example shops and their detail anchors.
+- `item.html` contains the complete Brown Leather Jacket detail plus a matching detail anchor for every other Explore card.
+- `favorites.html` shows the saved and empty states.
+- `booking.html` contains the sample item/store summary, booking form, and error, pending, and success state templates.
+- `virtual-try-on.html` is a static AI/AR concept board. It does not use a camera, photo upload, or AI service.
+- `styles.css` keeps the original Campus Market styles and adds the RETHREAD rules in a separate, `rt-`-prefixed section.
+- `assets/images/` contains the locally stored shop and clothing photos listed under Image sources.
+
+Open `index.html` in a browser, or run `python3 -m http.server 8000` from this folder and visit `http://localhost:8000`. A local server is recommended for consistent relative links.
+
+## JavaScript integration points
+
+All current RETHREAD pages are static; no booking, filtering, sorting, or favorite action is implemented. Keep the existing Campus Market `app.js` separate: it expects the former marketplace markup and is intentionally not loaded by the new `index.html`. The existing FAQ page and its `faq.js` are unchanged.
+
+- Explore: `#clothes-search[data-search-clothes]`, `#filter-store[data-filter-store]`, `#filter-category[data-filter-category]`, `#filter-size[data-filter-size]`, `#filter-price[data-filter-price]`, and `#sort-items[data-sort-clothes]` are the search/filter/sort controls. Each product has a stable `data-item-id`, `data-store`, `data-category`, `data-size`, and `data-price`. Update `#results-count`; show `#empty-results` and hide `#product-grid` when there are no matches. `[data-clear-filters]` is the reset control.
+- Favorites: `[data-favorite-toggle="item-01"]` identifies a favorite action; maintain `aria-pressed` and the `.is-saved` class together. `#saved-items` and `#empty-favorites` are the two page states; toggle their `hidden` attributes. The initial saved piece is example-only.
+- Item detail: every inventory card links to its matching `item.html#item-XX` section. `item-01` contains the full detail and its save/booking controls.
+- Booking: `#booking-form[data-booking-form]` is the form, and `[data-booking-submit]` is deliberately `type="button"` so this static page cannot submit or refresh. Intercept the form before adding a submit flow. Mark invalid `.rt-form-field` wrappers with `.is-invalid`, set the related control's `aria-invalid="true"`, and reveal its `[data-field-error]`. The unavailable time is a disabled option. `#booking-feedback` is the live status area; `#booking-error-template`, `#booking-pending-template`, and `#booking-success-template` provide reusable states. `#booking-success` is a visible success example that can replace the form once a real demo flow exists.
+- Virtual try-on: the wardrobe links open the corresponding item-detail anchors. The current two-image board is a static editorial example, not a generated fitting result.
+
+Use the shared `rt-` component classes in `styles.css` for future states. Focus indicators, reduced-motion handling, and responsive layouts are already included.
+
+## Sample content and image sources
+
+All shop names, addresses, prices, hours, available times, and inventory are fictional classroom examples. The forest-green and cream palette is defined in `styles.css` custom properties. Replace sample data with verified information before presenting the listings as real.
+
+The local JPEGs were downloaded from Unsplash image CDN URLs and are covered by the [Unsplash License](https://unsplash.com/license). The listed photo IDs link to each source image at Unsplash. Photographer attribution is not required by the license, though it is appreciated; photographer names are not asserted here. Shop photos are illustrative, not photos of actual listed businesses, and the pages label them accordingly. Product photos are visual references, not verified inventory; keep the descriptive sample text conservative and replace the images with authorized, accurate product photos for a production catalog.
+
+| Local file | Subject | Unsplash photo ID |
+|---|---|---|
+| `assets/images/hero-vintage-shop.jpg` | Warm second-hand shop interior | [`photo-1464890100898-a385f744067f`](https://images.unsplash.com/photo-1464890100898-a385f744067f) |
+| `assets/images/second-story-interior.jpg` | Vintage shop interior | [`photo-1595991209266-5ff5a3a2f008`](https://images.unsplash.com/photo-1595991209266-5ff5a3a2f008) |
+| `assets/images/juniper-thread-interior.jpg` | Clothing shop interior | [`photo-1521335629791-ce4aec67dd15`](https://images.unsplash.com/photo-1521335629791-ce4aec67dd15) |
+| `assets/images/north-loop-interior.jpg` | Curated clothing shop interior | [`photo-1460776960860-7adc30a4e69d`](https://images.unsplash.com/photo-1460776960860-7adc30a4e69d) |
+| `assets/images/brown-jacket.jpg` | Brown leather jacket | [`photo-1687090983512-a03da75e1f3d`](https://images.unsplash.com/photo-1687090983512-a03da75e1f3d) |
+| `assets/images/cream-knit-sweater.jpg` | Cream knit sweater | [`photo-1631541909061-71e349d1f203`](https://images.unsplash.com/photo-1631541909061-71e349d1f203) |
+| `assets/images/blue-denim-jacket.jpg` | Blue denim jacket | [`photo-1543076447-215ad9ba6923`](https://images.unsplash.com/photo-1543076447-215ad9ba6923) |
+| `assets/images/blue-stripe-shirt.jpg` | Blue striped shirt | [`photo-1549037173-e3b717902c57`](https://images.unsplash.com/photo-1549037173-e3b717902c57) |
+| `assets/images/rust-floral-dress.jpg` | Rust floral dress | [`photo-1570382667048-23b581258f6a`](https://images.unsplash.com/photo-1570382667048-23b581258f6a) |
+| `assets/images/vintage-blue-jeans.jpg` | Blue jeans | [`photo-1542272604-787c3835535d`](https://images.unsplash.com/photo-1542272604-787c3835535d) |
+| `assets/images/checked-blazer.jpg` | Checked blazer | [`photo-1616715623022-65d18f0042ae`](https://images.unsplash.com/photo-1616715623022-65d18f0042ae) |
+| `assets/images/olive-utility-jacket.jpg` | Olive utility jacket | [`photo-1594587639708-095eb3778067`](https://images.unsplash.com/photo-1594587639708-095eb3778067) |
+
+Item cards use a shared 3:4 image ratio. The same item name, image, price, size, and condition are repeated consistently on Explore, its detail anchor, Favorites, and the booking summary.

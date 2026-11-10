@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#F6F3EC">
+    <title>Favorites | RETHREAD</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="rethread-site">
+    <a class="rt-skip-link" href="#main-content">Skip to main content</a>
+    <header class="rt-header">
+      <div class="rt-header-inner">
+        <a class="rt-wordmark" href="index.html" aria-label="RETHREAD home">RETHREAD<span aria-hidden="true">.</span></a>
+        <nav class="rt-nav" aria-label="Main navigation">
+          <a href="index.html#clothes">Explore</a>
+          <a href="stores.html">Stores</a>
+          <a href="favorites.html" aria-current="page">Favorites</a>
+          <a href="virtual-try-on.html">Virtual Try-On</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="rt-container rt-page" id="main-content">
+      <div class="rt-page-heading">
+        <p class="rt-eyebrow">YOUR EDIT</p>
+        <h1>Saved for another look.</h1>
+        <p>This page shows a sample saved piece. Favorites are a visual prototype only and are not saved between pages yet.</p>
+      </div>
+
+      <section id="saved-items" data-favorites-view="saved" aria-labelledby="saved-heading">
+        <div class="rt-results-bar">
+          <h2 id="saved-heading">One saved piece</h2>
+          <a class="rt-text-link" href="index.html#clothes">Keep exploring <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="rt-product-grid rt-favorites-grid">
+          <article class="rt-product-card" data-item-id="item-01">
+            <div class="rt-product-image">
+              <a href="item.html#item-01" aria-label="View Brown Leather Jacket details">
+                <img src="assets/images/brown-jacket.jpg" alt="Brown leather jacket worn over a dark shirt">
+              </a>
+              <button class="rt-favorite-button is-saved" type="button" data-favorite-toggle="item-01" aria-pressed="true" aria-label="Remove Brown Leather Jacket from favorites">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 8.8c0 5.2-8.2 10.1-8.2 10.1S3.8 14 3.8 8.8a4.2 4.2 0 0 1 7.8-2.1 4.2 4.2 0 0 1 8.6 2.1Z"/></svg>
+              </button>
+            </div>
+            <div class="rt-product-info">
+              <div class="rt-product-title-row"><h3><a href="item.html#item-01">Brown Leather Jacket</a></h3><span class="rt-price">$68</span></div>
+              <p class="rt-product-meta">M <span aria-hidden="true">·</span> Good condition</p>
+              <a class="rt-store-link" href="stores.html#store-second-story">Second Story Vintage <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="rt-empty-state" id="empty-favorites" data-favorites-view="empty" aria-labelledby="empty-favorites-heading" hidden>
+        <p class="rt-eyebrow">A FRESH START</p>
+        <h2 id="empty-favorites-heading">No saved pieces yet.</h2>
+        <p>When a piece catches your eye, save it here and come back when you're ready.</p>
+        <a class="rt-button rt-button-primary" href="index.html#clothes">Explore clothes <span aria-hidden="true">→</span></a>
+      </section>
+
+      <p class="rt-demo-note rt-state-note">For the JavaScript handoff: show either <code>#saved-items</code> or <code>#empty-favorites</code> by toggling its <code>hidden</code> attribute.</p>
+    </main>
+
+    <footer class="rt-footer">
+      <div class="rt-container rt-footer-inner">
+        <a class="rt-wordmark" href="index.html">RETHREAD<span aria-hidden="true">.</span></a>
+        <p>Find your next favorite, close to home.</p>
+        <span>Classroom prototype · Sample listings only</span>
+      </div>
+    </footer>
+  </body>
+</html>

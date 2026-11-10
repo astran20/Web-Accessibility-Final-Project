@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f7f7f2">
+    <title>FAQ &amp; Support | Campus Secondhand Marketplace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="faq.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="Campus Market home">
+        <span class="brand-mark" aria-hidden="true">cm<span>.</span></span>
+        <span class="brand-name">campus<span>market</span></span>
+      </a>
+      <nav class="site-page-nav" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="how-to-use.html">How to Use</a>
+        <a href="faq.html" aria-current="page">FAQ &amp; Support</a>
+      </nav>
+    </header>
+
+    <main class="content-main" id="main-content" tabindex="-1">
+      <div class="page-intro">
+        <span class="eyebrow">HERE TO HELP</span>
+        <h1>FAQ &amp; Support</h1>
+        <p>Answers to common questions about using this campus marketplace prototype.</p>
+      </div>
+
+      <div class="faq-support-layout">
+        <section class="faq-list" aria-label="Frequently asked questions">
+          <details class="faq-item">
+            <summary>How do I post an item?</summary>
+            <div class="faq-answer"><p>On the home page, choose <strong>Post an item</strong>, complete the simulated email verification, and add a photo and item details. Posts are saved in your browser only; they are not published to a real marketplace.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How do I contact a seller?</summary>
+            <div class="faq-answer"><p>Open an item and select <strong>Message seller</strong>. The prototype asks for simulated verification and lets you type a message, but it does not deliver messages to real sellers.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Where should I meet the seller?</summary>
+            <div class="faq-answer"><p>Choose a public, well-lit place on campus, such as a busy student center or library entrance. The listed meetup spot is only a suggestion in this demo.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What if my item does not sell?</summary>
+            <div class="faq-answer"><p>In the wider home-page layout, <strong>My listings</strong> includes a <strong>Donate / recycle</strong> option for your own items. That control is hidden on small screens. It only records your choice in this browser; it does not arrange a handoff. Check your campus community center or student resource hub for donation options, or follow campus recycling guidance.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How can I use the site with a keyboard?</summary>
+            <div class="faq-answer"><p>Use Tab or Shift + Tab to move between controls. Enter activates links, and Enter or Space activates buttons and focused marketplace listings. The FAQ questions can be opened or closed with Enter or Space. On the home page, ⌘ K (Mac) or Ctrl + K focuses search, and Escape closes an open dialog.</p></div>
+          </details>
+        </section>
+
+        <section class="support-card" aria-labelledby="support-heading">
+          <h2 id="support-heading">Ask for help</h2>
+          <p>Share a question or issue using the demo form.</p>
+          <form id="support-form" novalidate>
+            <label class="form-field" for="school-email">School email <span aria-hidden="true">*</span>
+              <input id="school-email" name="email" type="email" autocomplete="email" required aria-describedby="email-error">
+              <span class="field-error" id="email-error" role="alert" hidden></span>
+            </label>
+            <label class="form-field" for="support-topic">Topic
+              <select id="support-topic" name="topic">
+                <option value="">Choose a topic (optional)</option>
+                <option value="listing">Posting or managing a listing</option>
+                <option value="seller">Contacting a seller</option>
+                <option value="safety">Safety or meeting up</option>
+                <option value="donation">Donation or recycling</option>
+                <option value="other">Other question</option>
+              </select>
+            </label>
+            <label class="form-field" for="support-message">Message <span aria-hidden="true">*</span>
+              <textarea id="support-message" name="message" rows="5" required aria-describedby="message-error"></textarea>
+              <span class="field-error" id="message-error" role="alert" hidden></span>
+            </label>
+            <button class="button button-dark form-submit" type="submit">Send message <span aria-hidden="true">→</span></button>
+            <p class="support-demo-note">Demo only: this course prototype has no support inbox and will not send or store your message.</p>
+            <p class="support-response" id="form-response" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer content-footer">
+      <a class="brand" href="index.html"><span class="brand-mark">cm<span>.</span></span><span class="brand-name">campus<span>market</span></span></a>
+      <span>Made for campus. Better in circulation.</span>
+      <span>Meet in public. Trade thoughtfully.</span>
+    </footer>
+  </body>
+</html>
