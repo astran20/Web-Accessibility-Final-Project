@@ -498,6 +498,8 @@ h1, h2, h3, p { margin-top: 0; }
 .rt-tryon-reference span { display: block; margin-top: 0.2rem; color: var(--rt-muted); font-size: 0.68rem; text-align: center; }
 .rt-tryon-progress { position: absolute; top: 50%; left: 50%; margin: 0; padding: 0.55rem 0.8rem; transform: translate(-50%, -50%); border-left: 3px solid var(--rt-caramel); background: var(--rt-paper); color: var(--rt-ink); font-size: 0.85rem; font-weight: 700; white-space: nowrap; }
 .rt-tryon-figure figcaption { padding: 0.55rem 0.75rem; border-top: 1px solid var(--rt-line); background: var(--rt-paper); color: var(--rt-muted); font-size: 0.8rem; }
+.rt-ar-note { margin: 0.75rem 0 0; padding: 0.6rem 0.8rem; border-left: 3px solid var(--rt-caramel); background: var(--rt-sand); color: var(--rt-muted); font-size: 0.8rem; line-height: 1.5; }
+.rt-ar-note strong { color: var(--rt-ink); }
 .rt-fit-summary { margin: 1rem 0; padding: 0.9rem 1rem; border-left: 4px solid var(--rt-green); background: var(--rt-paper); }
 .rt-fit-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.8rem; margin: 0 0 0.3rem; }
 .rt-fit-label { font: 400 1.35rem/1.2 var(--rt-serif); }
