@@ -5,8 +5,9 @@
   var FAVORITES_KEY = "rethread-favorites";
   var SIZE_ORDER = { S: 1, M: 2, L: 3, XL: 4 };
 
-  // Mirrors the 8 Explore cards in index.html. Replace with Charlie's items endpoint once it exists.
-  // `look` describes how each piece is illustrated on the figure; colours are sampled from the listing photo.
+  // Built-in copy of the 8 Explore cards, used when the API isn't connected (for example on GitHub Pages).
+  // When it is, the list comes from /api/items and these entries only add the drawing (`look`) and the
+  // assistant's colors/tags. `look` describes how each piece is illustrated; colours are sampled from the listing photo.
   var ITEMS = [
     { id: "item-01", name: "Brown Leather Jacket", category: "outerwear", size: "M", price: 68, store: "Second Story Vintage", colors: ["brown"], tags: ["warm", "leather", "vintage", "layering", "casual", "going-out"],
       image: "assets/images/brown-jacket.jpg",
@@ -33,6 +34,22 @@
       image: "assets/images/olive-utility-jacket.jpg",
       look: { kind: "jacket", fabric: "twill", base: "#5A6D42", light: "#6E8352", dark: "#475932", line: "#2C391C", hem: 268, collar: "shirt", chestPockets: true, stitch: "#7E9160", buttons: [114, 142, 170, 198, 226, 254] } }
   ];
+
+  // Pieces that only exist in the API's sample data (not on the Explore page).
+  var API_ONLY_DETAILS = {
+    "item-09": { colors: ["red", "burgundy"], tags: ["warm", "work", "vintage", "layering"],
+      look: { kind: "jacket", fabric: "twill", base: "#6B2533", light: "#8A3443", dark: "#521B27", line: "#360F18", hem: 300, open: true, inner: "#2E2326", lapels: true, pockets: "flap", buttons: [176, 222] } },
+    "item-10": { colors: ["black"], tags: ["warm", "casual", "layering"],
+      look: { kind: "jacket", fabric: "quilt", base: "#2F3033", light: "#55575C", dark: "#1F2022", line: "#111214", hem: 262, waistband: true, buttons: [120, 150, 180, 210, 240] } }
+  };
+
+  // Used for pieces from the API that have no hand-made `look` above yet.
+  var DEFAULT_LOOKS = {
+    outerwear: { kind: "jacket", fabric: "twill", base: "#8A7A68", light: "#A29380", dark: "#6E604F", line: "#4A3F33", hem: 270, collar: "shirt", buttons: [130, 165, 200, 235] },
+    tops: { kind: "top", fabric: "knit", base: "#B9AE9E", dark: "#978C7C", line: "#776C5D", hem: 258, neck: "crew", rib: true },
+    dresses: { kind: "dress", fabric: "twill", base: "#8A6A5E", light: "#A6887B", dark: "#6E5246", line: "#4F3A31", hem: 340 },
+    denim: { kind: "jeans", fabric: "denim", base: "#6F8FB2", light: "#A4BCD6", dark: "#56769A", line: "#3F5878", stitch: "#C9925A" }
+  };
 
   // figure-geometry:start (also read by tools/generate-tryon-models.js to draw assets/tryon/*.svg)
   var CX = 120;
@@ -176,7 +193,7 @@
       el("stop", { offset: "1", "stop-color": look.dark }, g);
       return;
     }
-    var sizes = { knit: [7, 8], denim: [5, 5], twill: [5, 5], stripe: [8, 8], floral: [24, 24], houndstooth: [6, 6] };
+    var sizes = { knit: [7, 8], denim: [5, 5], twill: [5, 5], stripe: [8, 8], floral: [24, 24], houndstooth: [6, 6], quilt: [12, 12] };
     var p = el("pattern", { id: id, width: sizes[f][0], height: sizes[f][1], patternUnits: "userSpaceOnUse" }, defs);
     el("rect", { width: sizes[f][0], height: sizes[f][1], fill: look.base }, p);
     if (f === "knit") {
@@ -195,6 +212,8 @@
         el("circle", { cx: fl[0], cy: fl[1], r: 0.9 * fl[2], fill: look.dark }, p);
       });
       el("path", { d: "M12 14 q2 -3 5 -2 M2 20 q2 -2 4 0", fill: "none", stroke: look.light, "stroke-width": "0.8", opacity: "0.8" }, p);
+    } else if (f === "quilt") {
+      el("path", { d: "M0 0 L12 12 M12 0 L0 12", stroke: look.light, "stroke-width": "0.7", opacity: "0.7" }, p);
     } else if (f === "houndstooth") {
       el("path", { d: "M0 0 H3 V3 H0 Z M3 3 L6 6 H3 Z M3 3 L6 0 V3 Z", fill: look.dark }, p);
     }
@@ -443,7 +462,39 @@
 
   window.RETHREAD_TRYON = { items: ITEMS, tryItem: null };
 
-  // ---- Favorites (shared localStorage key so other pages can read it) ----
+  // ---- Back end (Charlie's PHP API, via api-config.js). Everything still works without it. ----
+
+  function api() {
+    return window.RETHREAD_API && window.RETHREAD_API.available ? window.RETHREAD_API : null;
+  }
+
+  function fromApi(apiItem) {
+    var local = find(ITEMS, apiItem.item_id) || API_ONLY_DETAILS[apiItem.item_id];
+    return {
+      id: apiItem.item_id,
+      name: apiItem.title,
+      category: apiItem.category,
+      size: apiItem.size,
+      price: Math.round(apiItem.price_cents / 100),
+      store: apiItem.store ? apiItem.store.name : "",
+      image: apiItem.image,
+      colors: local ? local.colors : [],
+      tags: local ? local.tags : [],
+      look: local ? local.look : (DEFAULT_LOOKS[apiItem.category] || DEFAULT_LOOKS.outerwear)
+    };
+  }
+
+  // Resolves with the API's current catalog, or null if the API isn't connected or fails.
+  function loadApiItems() {
+    if (!api()) return Promise.resolve(null);
+    return api().request("items", { query: { sort: "recent" } }).then(function (data) {
+      var items = (data.items || []).map(fromApi).filter(function (item) { return SIZE_ORDER[item.size]; });
+      items.sort(function (a, b) { return a.id < b.id ? -1 : 1; });
+      return items.length ? items : null;
+    }).catch(function () { return null; });
+  }
+
+  // ---- Favorites: saved in localStorage (other pages read the same key) and, when connected, on the server ----
 
   function readFavorites() {
     try { return JSON.parse(localStorage.getItem(FAVORITES_KEY)) || []; } catch (err) { return []; }
@@ -451,6 +502,21 @@
 
   function writeFavorites(ids) {
     try { localStorage.setItem(FAVORITES_KEY, JSON.stringify(ids)); } catch (err) { /* storage unavailable: keep in-page state only */ }
+  }
+
+  function loadServerFavorites() {
+    if (!api()) return Promise.resolve(null);
+    return api().request("favorites", { visitor: true }).then(function (data) {
+      return (data.items || []).map(function (item) { return item.item_id; });
+    }).catch(function () { return null; });
+  }
+
+  function saveServerFavorite(id, saved) {
+    if (!api()) return Promise.resolve(true);
+    var call = saved
+      ? api().request("add-favorite", { method: "POST", body: { item_id: id }, visitor: true })
+      : api().request("remove-favorite", { method: "DELETE", body: { item_id: id }, visitor: true });
+    return call.then(function () { return true; }).catch(function () { return false; });
   }
 
   // ---- Page wiring ----
@@ -503,16 +569,29 @@
       modelList.appendChild(label);
     });
 
-    ITEMS.forEach(function (item) {
-      var label = document.createElement("label");
-      label.className = "rt-choice rt-choice-item";
-      label.innerHTML =
-        '<input type="radio" name="tryon-item" value="' + item.id + '">' +
-        '<img src="' + item.image + '" alt="">' +
-        '<span class="rt-choice-name">' + item.name + '</span>' +
-        '<span class="rt-choice-meta">Size ' + item.size + ' · $' + item.price + '</span>';
-      itemList.appendChild(label);
-    });
+    function renderItems() {
+      itemList.replaceChildren();
+      ITEMS.forEach(function (item) {
+        var label = document.createElement("label");
+        label.className = "rt-choice rt-choice-item";
+        var input = document.createElement("input");
+        input.type = "radio";
+        input.name = "tryon-item";
+        input.value = item.id;
+        var img = document.createElement("img");
+        img.src = item.image;
+        img.alt = "";
+        var name = document.createElement("span");
+        name.className = "rt-choice-name";
+        name.textContent = item.name;
+        var meta = document.createElement("span");
+        meta.className = "rt-choice-meta";
+        meta.textContent = "Size " + item.size + " · $" + item.price;
+        label.append(input, img, name, meta);
+        itemList.appendChild(label);
+      });
+    }
+    renderItems();
 
     function syncChoices() {
       root.querySelectorAll('input[name="tryon-model"]').forEach(function (input) { input.checked = input.value === state.model.id; });
@@ -583,16 +662,23 @@
 
     itemList.addEventListener("change", function (event) {
       state.item = find(ITEMS, event.target.value) || state.item;
+      state.touched = true;
       runTryOn();
     });
 
     saveButton.addEventListener("click", function () {
+      var item = state.item;
       var ids = readFavorites();
-      var index = ids.indexOf(state.item.id);
-      if (index === -1) ids.push(state.item.id); else ids.splice(index, 1);
+      var index = ids.indexOf(item.id);
+      var saving = index === -1;
+      if (saving) ids.push(item.id); else ids.splice(index, 1);
       writeFavorites(ids);
       updateSave();
-      status.textContent = state.item.name + (index === -1 ? " saved to Favorites." : " removed from Favorites.");
+      var message = item.name + (saving ? " saved to Favorites." : " removed from Favorites.");
+      status.textContent = message;
+      saveServerFavorite(item.id, saving).then(function (ok) {
+        if (!ok) status.textContent = message + " It's saved on this device only, because the server couldn't be reached.";
+      });
     });
 
     pinButton.addEventListener("click", function () {
@@ -613,6 +699,7 @@
       var item = find(ITEMS, id);
       if (!item) return;
       state.item = item;
+      state.touched = true;
       runTryOn();
       var stacked = window.matchMedia("(max-width: 760px)").matches;
       root.querySelector(stacked ? ".rt-tryon-result" : ".rt-tryon-layout").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
@@ -622,6 +709,28 @@
     root.classList.add("is-ready");
     syncChoices();
     showResult(true);
+
+    loadApiItems().then(function (items) {
+      if (!items) return;
+      ITEMS.length = 0;
+      Array.prototype.push.apply(ITEMS, items);
+      var preferred = state.touched ? state.item.id : params.get("item") || state.item.id;
+      state.item = find(ITEMS, preferred) || find(ITEMS, state.item.id) || ITEMS[0];
+      clearTimeout(state.timer);
+      renderItems();
+      syncChoices();
+      showResult(true);
+    });
+
+    loadServerFavorites().then(function (ids) {
+      if (!ids) return;
+      var merged = ids.slice();
+      readFavorites().forEach(function (id) {
+        if (merged.indexOf(id) === -1) { merged.push(id); saveServerFavorite(id, true); }
+      });
+      writeFavorites(merged);
+      updateSave();
+    });
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);

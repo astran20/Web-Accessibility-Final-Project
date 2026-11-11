@@ -36,7 +36,8 @@
     [/\b(olive|khaki)\b/, "olive"],
     [/\b(rust|orange|terracotta)\b/, "rust"],
     [/\b(red|burgundy)\b/, "red"],
-    [/\bwhite\b/, "white"]
+    [/\bwhite\b/, "white"],
+    [/\b(black|charcoal)\b/, "black"]
   ];
 
   var CATEGORY_LABEL = { outerwear: "a jacket or outer layer", tops: "a top", dresses: "a dress", denim: "jeans" };
