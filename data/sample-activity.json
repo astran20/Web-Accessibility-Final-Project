@@ -1,0 +1,30 @@
+{
+    "visitors": ["v_demo_visitor_0001", "v_demo_visitor_0002"],
+    "favorites": [
+        {"visitor_token": "v_demo_visitor_0001", "item_id": "item-02"},
+        {"visitor_token": "v_demo_visitor_0001", "item_id": "item-05"},
+        {"visitor_token": "v_demo_visitor_0002", "item_id": "item-02"},
+        {"visitor_token": "v_demo_visitor_0002", "item_id": "item-08"}
+    ],
+    "bookings": [
+        {
+            "item_id": "item-02",
+            "visitor_token": "v_demo_visitor_0001",
+            "name": "Sample Shopper",
+            "email": "shopper@example.com",
+            "days_from_now": 1,
+            "time": "14:00",
+            "notes": "Sample booking so the 2:00 pm slot shows as fully booked.",
+            "confirmation_code": "RT-DEMO01"
+        },
+        {
+            "item_id": "item-05",
+            "visitor_token": "v_demo_visitor_0002",
+            "name": "Another Shopper",
+            "email": "another@example.com",
+            "days_from_now": 1,
+            "time": "14:00",
+            "confirmation_code": "RT-DEMO02"
+        }
+    ]
+}
