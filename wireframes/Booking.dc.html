@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Book an in-store try-on</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<style>
+body{margin:0}
+a{color:#222}a:hover{color:#000}
+</style>
+</helmet>
+<div style="min-height: 1100px; box-sizing: border-box; background: #ffffff; color: #222222; font-family: Inter, system-ui, sans-serif; font-size: 15px; line-height: 1.4">
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding: 16px 32px; border-bottom: 2px solid #222222">
+<a href="Main.dc.html" style="font-weight: 700; font-size: 18px; border: 2px solid #222222; padding: 8px 12px; text-decoration: none">[APP NAME]</a>
+<nav aria-label="Main" style="display: flex; flex-wrap: wrap; gap: 4px 20px; flex-grow: 1">
+<a href="Main.dc.html" style="padding: 12px 4px">Browse</a>
+<a href="Favorites.dc.html" style="padding: 12px 4px">Favorites</a>
+<a href="TryOn.dc.html" style="padding: 12px 4px">Virtual try-on</a>
+<a href="Appointments.dc.html" style="padding: 12px 4px">Appointments</a>
+<a href="Tech.dc.html" style="padding: 12px 4px">How it works</a>
+</nav>
+</header>
+<main style="max-width: 1100px; margin: 0 auto; padding: 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px">
+<a href="Main.dc.html" style="align-self: flex-start; padding: 12px 0">← Back to browse</a>
+<h1 style="margin: 0; font-size: 28px">Book an in-store try-on</h1>
+<div style="display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start">
+<aside aria-label="Item you are booking" style="flex: 1 1 260px; border: 2px solid #222222; padding: 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px">
+<div style="height: 240px; background: #e4e4e4; border: 2px solid #222222; display: flex; align-items: center; justify-content: center; color: #444444">item photo</div>
+<span style="font-weight: 700; font-size: 18px">Wool sweater</span>
+<span>Size M · $[PRICE]</span>
+<span style="font-weight: 600">[STORE B]</span>
+<span>[STORE ADDRESS]</span>
+<span>[STORE HOURS]</span>
+<div style="height: 120px; background: #e4e4e4; border: 2px dashed #222222; display: flex; align-items: center; justify-content: center; color: #444444">map placeholder</div>
+</aside>
+<form style="flex: 2 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+<div role="alert" style="border: 4px solid #222222; padding: 16px; display: flex; gap: 12px; align-items: flex-start">
+<span aria-hidden="true" style="width: 28px; height: 28px; border-radius: 50%; background: #222222; color: #ffffff; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0">!</span>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-weight: 700">One thing is missing before we can book</span>
+<a href="#b-date">Pick a date for your visit</a>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="b-store" style="font-weight: 600">Store</label>
+<select id="b-store" style="height: 44px; border: 2px solid #222222; background: #ffffff; font: inherit; padding: 0 8px">
+<option>[STORE B] (has this item)</option>
+</select>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="b-date" style="font-weight: 600">Date (required)</label>
+<input id="b-date" type="date" aria-invalid="true" aria-describedby="b-date-err" style="height: 48px; border: 4px solid #222222; font: inherit; padding: 0 8px; box-sizing: border-box">
+<span id="b-date-err" style="font-weight: 700">! Please pick a date. The store is open [OPEN DAYS].</span>
+</div>
+<fieldset style="border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px">
+<legend style="font-weight: 600; padding: 0; margin-bottom: 8px">Time (required)</legend>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button type="button" style="height: 44px; padding: 0 14px; border: 2px solid #222222; background: #ffffff; color: #222222; font: inherit">10:00</button>
+<button type="button" style="height: 44px; padding: 0 14px; border: 2px solid #222222; background: #ffffff; color: #222222; font: inherit">11:00</button>
+<button type="button" aria-pressed="true" style="height: 44px; padding: 0 14px; border: 2px solid #222222; background: #222222; color: #ffffff; font: inherit">1:00</button>
+<button type="button" style="height: 44px; padding: 0 14px; border: 2px solid #222222; background: #ffffff; color: #222222; font: inherit">2:00</button>
+<button type="button" disabled style="height: 44px; padding: 0 14px; border: 2px dashed #595959; background: #ffffff; color: #595959; font: inherit; text-decoration: line-through">3:00 full</button>
+</div>
+</fieldset>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="b-name" style="font-weight: 600">Your name (required)</label>
+<input id="b-name" type="text" value="[NAME]" style="height: 44px; border: 2px solid #222222; font: inherit; padding: 0 8px; box-sizing: border-box">
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="b-contact" style="font-weight: 600">Email or phone (required)</label>
+<input id="b-contact" type="text" value="[CONTACT]" style="height: 44px; border: 2px solid #222222; font: inherit; padding: 0 8px; box-sizing: border-box">
+<span style="color: #444444">Only used to confirm or change this visit.</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 12px">
+<a href="Appointments.dc.html" style="flex: 2 1 200px; text-align: center; padding: 13px 8px; border: 2px solid #222222; background: #222222; color: #ffffff; text-decoration: none; font-weight: 700; box-sizing: border-box">Confirm booking</a>
+<a href="Main.dc.html" style="flex: 1 1 120px; text-align: center; padding: 13px 8px; border: 2px solid #222222; text-decoration: none; box-sizing: border-box">Cancel</a>
+</div>
+</form>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1100}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

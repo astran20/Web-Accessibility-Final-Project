@@ -1,0 +1,28 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-11-10T09:00:00Z"},
+  "title": "Secondhand Clothing Lo-Fi Wireframes",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 1280, "h": 1240, "title": "1 Browse + filter", "expand": "fill", "is_interactive": true},
+    "BrowseEmpty.dc.html": {"x": 1360, "y": 0, "w": 1280, "h": 820, "title": "1b Browse, no results", "expand": "fill", "is_interactive": true},
+    "Favorites.dc.html": {"x": 2720, "y": 0, "w": 1280, "h": 900, "title": "2 Favorites", "expand": "fill", "is_interactive": true},
+    "TryOn.dc.html": {"x": 4080, "y": 0, "w": 1280, "h": 1100, "title": "3 Virtual try-on (demo)", "expand": "fill", "is_interactive": true},
+    "Booking.dc.html": {"x": 5440, "y": 0, "w": 1280, "h": 1100, "title": "4 Book in-store try-on", "expand": "fill", "is_interactive": true},
+    "Appointments.dc.html": {"x": 6800, "y": 0, "w": 1280, "h": 1100, "title": "5 Appointments", "expand": "fill", "is_interactive": true},
+    "Tech.dc.html": {"x": 8160, "y": 0, "w": 1280, "h": 1150, "title": "6 How it works + sustainability", "expand": "fill", "is_interactive": true}
+  },
+  "order": ["Main.dc.html", "BrowseEmpty.dc.html", "Favorites.dc.html", "TryOn.dc.html", "Booking.dc.html", "Appointments.dc.html", "Tech.dc.html"],
+  "notes": {
+    "flow": {"x": 0, "y": -300, "text": "Main flow: browse, save, try on, book, manage", "kind": "title1", "maxW": 9440},
+    "n1": {"x": 0, "y": 1300, "w": 420, "fill": "orange", "text": "Interaction 1: Filter clothes. Filters sit in the left panel (size, category, price). The list and the result count update as filters change. Hearts on each card are interaction 2. Chat box position is marked bottom right in case we add one."},
+    "n1b": {"x": 1360, "y": 880, "w": 420, "fill": "orange", "text": "Interaction 1, empty state. Nothing matches, so the grid is replaced by a message and a Clear filters button. Active filters show as removable chips."},
+    "n2": {"x": 2720, "y": 960, "w": 420, "fill": "orange", "text": "Interaction 2: Save favorites. Saved items show a filled heart. Clicking it again removes the item from this page. Empty state is drawn at the bottom."},
+    "n3": {"x": 4080, "y": 1160, "w": 420, "fill": "orange", "text": "Interaction 3: Simulated virtual try-on. Step 1 pick a sample person, step 2 pick an item, step 3 see the result. The DEMO label stays visible the whole time. Compare strip keeps the last two results side by side."},
+    "n4": {"x": 5440, "y": 1160, "w": 420, "fill": "orange", "text": "Interaction 4: Book an in-store try-on. Drawn in the error state: the date is missing, so there is a summary at the top of the form and a message next to the field."},
+    "n5": {"x": 6800, "y": 1160, "w": 420, "fill": "orange", "text": "Interaction 5: Manage appointments. Confirmation shows item, store, date and time right after booking. Each row has View and Cancel. Cancel asks for confirmation before removing."},
+    "n6": {"x": 8160, "y": 1210, "w": 420, "fill": "orange", "text": "Emerging tech + sustainability page. Explains how AI/AR try-on works, what our demo simulates, and why secondhand matters. Stats are placeholders until Ismael's research is in."}
+  },
+  "designSystems": []
+}
