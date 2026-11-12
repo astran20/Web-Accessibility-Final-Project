@@ -1,53 +1,20 @@
-# RETHREAD API Documentation
-
-The RETHREAD back end is a small PHP + SQLite API that speaks JSON. Each endpoint lives at `/api/<name>` (adding `.php` also works). Nothing is cached (`Cache-Control: no-store`), so a page refresh always shows the current catalog. To try the endpoints by hand, use the demo console at `/demo/`.
-
-**Contents**
-
-- [Conventions](#conventions)
-- [Authentication](#authentication)
-- [Objects](#objects)
-- [Featured ordering](#featured-ordering)
-- [Public endpoints](#public-endpoints): catalog, stores, favorites, booking, try-on, impact
-- [Store endpoints](#store-endpoints): dashboard, listings, inventory, bookings, hours and closures
-- [Error codes](#error-codes)
-
-## Conventions
-
-| Topic | Rule |
-|-------|------|
-| Reading | `GET` endpoints take **query parameters** only. Browsers' `fetch()` refuses to send a body with `GET`. |
-| Writing | `POST`, `PUT` and `DELETE` take a JSON body. Endpoints that create or edit a whole record wrap it: `{"booking": {...}}`, `{"item": {...}}`, `{"store": {...}}`, `{"closure": {...}}`. Small actions use flat bodies such as `{"item_id": "item-03", "status": "sold"}`. |
-| Status codes | `200` OK, `201` created, `204` CORS preflight, `400` invalid input, `401` auth missing or wrong, `404` not found, `405` wrong method, `409` conflict (slot taken, item sold, limit reached), `500` server error. |
-| Money | Prices are integers in cents (`price_cents: 6800`). Every item also has `price_display: "$68"`. |
-| Dates and times | Dates are `YYYY-MM-DD` and times are 24-hour `HH:MM`, both in the store's timezone (`America/Los_Angeles`). Timestamps such as `listed_at` are ISO 8601. Bookings also include `date_label` ("Friday, November 13") and `time_label` ("2:00 pm") for display. |
-| IDs | Stores use slugs (`second-story`). Items use `item-01`, `item-02`, … Bookings and closures use numbers. |
-| Links | Item objects include `url: "item.html?item_id=item-01"`, so pages can link to a detail view built from the API. |
-
-## Authentication
-
-There are no user accounts. Three kinds of credentials cover everything:
-
-| Who | How | Used for |
-|-----|-----|----------|
-| **Visitor** (any shopper) | `X-Visitor-Token` header. Get one from `POST /api/create-visitor` and keep it in `localStorage`. | Favorites, My Appointments, and optionally viewing or cancelling bookings made with that token. |
-| **Booking holder** | The `confirmation_code` returned by `create-booking` (for example `RT-7K2Q9M`). Works like a password for that one booking. Not case-sensitive. | Viewing, rescheduling or cancelling one booking, even from another device. |
-| **Store** | `X-Store-Id` and `X-Auth-Code` headers on every store request. Auth codes are stored hashed. | Everything under [Store endpoints](#store-endpoints). |
-
-Visitor and store credentials go in headers because `GET` requests can't carry a body.
+# API Documentation
+All endpoints live at `/api/<name>` and return JSON. `GET` endpoints read from query parameters, and everything else reads a JSON body. Prices are in cents, dates are `YYYY-MM-DD` and times are 24-hour `HH:MM` in Pacific time. You can try any endpoint by hand from the demo console at `/demo/`.
 
 ## Objects
-
 ### Errors
+An array of error objects returned when a request fails. Validation reports every bad field at once. The messages are written for shoppers, so the page can show them without changes.
 
-A failed request returns an `errors` array. If an error belongs to a form field, `field` names it, so the page can show the message under that field, set `aria-invalid="true"` on the control and announce it in the live region. Messages are written for shoppers and can go on the page unchanged. Validation reports all the invalid fields at once.
+**Error Fields**
+| Field        | Type           | Description                                                        |
+|--------------|----------------|--------------------------------------------------------------------|
+| "error_code" | string         | A no-spaces code for the error. See [Error Codes](#error-codes).   |
+| "field"      | string or null | The form field the error belongs to, or null if it isn't one field. |
+| "message"    | string         | A user-readable message explaining what to fix.                    |
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `error_code` | string | A no-spaces code for the error. See [Error codes](#error-codes). |
-| `field` | string or null | The form field the error belongs to, or `null` when it isn't tied to one field. |
-| `message` | string | A user-readable message explaining what to do. |
+Use "field" to put the message under the right input and set `aria-invalid="true"` on it.
 
+**Error Example**
 ```json
 {
     "errors": [
@@ -65,36 +32,65 @@ A failed request returns an `errors` array. If an error belongs to a form field,
 }
 ```
 
-### Item Object
+### Auth
+There are no user accounts. Three kinds of credentials cover every endpoint.
 
+**Auth Types**
+| Who            | How                                              | Used for                                         |
+|----------------|--------------------------------------------------|--------------------------------------------------|
+| Visitor        | "X-Visitor-Token" header from `POST /api/create-visitor` | Favorites and My Appointments                |
+| Booking holder | "confirmation_code" from `POST /api/create-booking` | Viewing, changing or cancelling one booking   |
+| Store          | "X-Store-Id" and "X-Auth-Code" headers           | Every store endpoint                             |
+
+Visitor and store credentials go in headers because `GET` requests can't carry a body. Confirmation codes aren't case-sensitive.
+
+**Booking Auth Object**
+Sent as "auth" when changing or cancelling a booking. With a visitor token in the header, "confirmation_code" can be left out.
+
+| Field               | Type   | Required | Description                                   |
+|---------------------|--------|----------|-----------------------------------------------|
+| "booking_id"        | number | Yes      | The booking being changed.                    |
+| "confirmation_code" | string | See desc | The code from create-booking. Not needed when the visitor token that made the booking is sent. |
+
+**Booking Auth Example**
+```json
+{
+    "booking_id": 3,
+    "confirmation_code": "RT-7K2Q9M"
+}
+```
+
+### Item Object
 A piece of clothing listed by a store.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `item_id` | string | Unique ID, such as `"item-01"`. Assigned by the server. |
-| `title` | string | Name of the piece. |
-| `store` | object | `{store_id, name, neighborhood}`. `GET /api/item` returns the full [Store Object](#store-object) here instead. |
-| `category` | string | One of `outerwear`, `tops`, `knitwear`, `dresses`, `denim`, `bottoms`, `accessories`. |
-| `size` | string | One of `XS`, `S`, `M`, `L`, `XL`. |
-| `price_cents` | number | Price in cents. |
-| `price_display` | string | Formatted price, such as `"$68"`. |
-| `condition` | string | One of `Excellent`, `Very good`, `Good`, `Fair`. |
-| `material` | string or null | Fiber or fabric, if known. |
-| `description` | string | Description of the piece. |
-| `image` | string | Relative path to the photo. |
-| `image_alt` | string | Alt text for the photo. Required on every listing. |
-| `try_on_supported` | boolean | Whether the piece works with the try-on demo. |
-| `status` | string | `available`, `held`, `sold` or `removed`. See [Inventory statuses](#inventory-statuses). |
-| `status_label` | string | Display text: `"Available"`, `"On hold"`, `"Sold"`, `"Removed"`. |
-| `is_bookable` | boolean | `true` only when `status` is `available`. |
-| `pinned` | boolean | Whether the store pinned it to the top of Featured. |
-| `listed_at` | string | When it was listed (ISO 8601). |
-| `sold_at` | string or null | When it sold (ISO 8601). |
-| `url` | string | Link to its detail page: `"item.html?item_id=item-01"`. |
-| `is_favorite` | boolean | Only present when a valid `X-Visitor-Token` was sent. Use it for the heart button's `aria-pressed`. |
-| `featured_score` | object | Only present with `sort=featured&explain=1`. See [Featured ordering](#featured-ordering). |
-| `favorites_count`, `upcoming_bookings` | number | Only present on store endpoints. |
+**Item Fields**
+| Field              | Type           | Description                                                        |
+|--------------------|----------------|--------------------------------------------------------------------|
+| "item_id"          | string         | Unique ID like "item-01". Read only; assigned by server.           |
+| "title"            | string         | Name of the piece.                                                 |
+| "store"            | object         | {store_id, name, neighborhood}. `GET /api/item` returns the full Store Object here. |
+| "category"         | string         | outerwear, tops, knitwear, dresses, denim, bottoms or accessories. |
+| "size"             | string         | XS, S, M, L or XL.                                                 |
+| "price_cents"      | number         | Price in cents.                                                    |
+| "price_display"    | string         | Formatted price, like "$68".                                       |
+| "condition"        | string         | Excellent, Very good, Good or Fair.                                |
+| "material"         | string or null | Fabric, if known.                                                  |
+| "description"      | string         | Description of the piece.                                          |
+| "image"            | string         | Relative path to the photo.                                        |
+| "image_alt"        | string         | Alt text for the photo. Required on every listing.                 |
+| "try_on_supported" | boolean        | Whether the piece works with the try-on demo.                      |
+| "status"           | string         | available, held, sold or removed. See [Item Statuses](#item-statuses). |
+| "status_label"     | string         | "Available", "On hold", "Sold" or "Removed".                       |
+| "is_bookable"      | boolean        | True only when status is available.                                |
+| "pinned"           | boolean        | Whether the store pinned it to the top of Featured.                |
+| "listed_at"        | string         | When it was listed (ISO 8601).                                     |
+| "sold_at"          | string or null | When it sold (ISO 8601).                                           |
+| "url"              | string         | Link to its detail page, like "item.html?item_id=item-01".         |
+| "is_favorite"      | boolean        | Only sent with a valid visitor token. Use it for the heart button's `aria-pressed`. |
+| "featured_score"   | object         | Only sent with `sort=featured&explain=1`. See [Featured Sort](#featured-sort). |
+| "favorites_count", "upcoming_bookings" | number | Only sent on store endpoints.                      |
 
+**Item Example**
 ```json
 {
     "item_id": "item-01",
@@ -125,36 +121,41 @@ A piece of clothing listed by a store.
 }
 ```
 
-#### Inventory statuses
+### Item Statuses
+How each status shows up on the site.
 
-| Status | Explore (`/api/items`) | Detail (`/api/item`) | Favorites | Can be booked | Notes |
-|--------|------------------------|----------------------|-----------|---------------|-------|
-| `available` | Listed | Yes | Yes | Yes | The normal state. |
-| `held` | Listed, with "On hold" | Yes | Yes | No | The store set it aside. Existing bookings are kept. Ranks lower in Featured. |
-| `sold` | Hidden unless `status=sold` | Yes, shows "Sold" | Kept, flagged sold | No | Upcoming bookings are cancelled with `ITEM_SOLD`. Counts toward the impact stat. |
-| `removed` | Hidden | `404` | Hidden | No | Archived by the store. Upcoming bookings are cancelled with `ITEM_REMOVED`. Still visible in the store's inventory. |
+| Status      | Explore                   | Detail page   | Favorites          | Bookable | Upcoming bookings          |
+|-------------|---------------------------|---------------|--------------------|----------|----------------------------|
+| "available" | Listed                    | Yes           | Yes                | Yes      | Kept                       |
+| "held"      | Listed as "On hold"       | Yes           | Yes                | No       | Kept                       |
+| "sold"      | Hidden unless status=sold | Shows "Sold"  | Kept, flagged sold | No       | Cancelled with ITEM_SOLD   |
+| "removed"   | Hidden                    | 404           | Hidden             | No       | Cancelled with ITEM_REMOVED |
 
 ### Store Object
+A thrift store and its booking settings.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `store_id` | string | Unique slug, such as `"second-story"`. |
-| `name` | string | Store name. |
-| `neighborhood` | string | Neighborhood, such as `"Mission District"`. |
-| `address`, `city` | string | Street address and city. |
-| `description` | string | Short description of what the store carries. |
-| `image`, `image_alt` | string | Store photo and its alt text. |
-| `hours` | Hours Object | Opening hours per weekday. |
-| `hours_display` | string | Readable summary, such as `"Mon–Sat 11 am–7 pm · Sun 12–6 pm"` or `"Tue–Sun 10 am–6 pm · Closed Mon"`. |
-| `slot_minutes` | number | Length of each try-on slot. |
-| `slot_capacity` | number | How many try-ons the store can host in one slot (fitting rooms). |
-| `url` | string | Link to the store on the Stores page. |
-| `item_count` | number | Pieces listed (available and held). Present on `/api/stores` and `/api/store`. |
-| `items` | Item Object[] | Only on `GET /api/store`. |
-| `closures` | Closure Object[] | Only on `GET /api/store`: upcoming closures. |
+**Store Fields**
+| Field                  | Type             | Description                                                  |
+|------------------------|------------------|--------------------------------------------------------------|
+| "store_id"             | string           | Unique slug like "second-story".                             |
+| "name"                 | string           | Store name.                                                  |
+| "neighborhood"         | string           | Neighborhood, like "Mission District".                       |
+| "address", "city"      | string           | Street address and city.                                     |
+| "description"          | string           | What the store carries.                                      |
+| "image", "image_alt"   | string           | Store photo and its alt text.                                |
+| "hours"                | Hours Object     | Opening hours for each weekday.                              |
+| "hours_display"        | string           | Readable summary, like "Tue–Sun 10 am–6 pm · Closed Mon".    |
+| "slot_minutes"         | number           | Length of each try-on slot.                                  |
+| "slot_capacity"        | number           | How many try-ons fit in one slot.                            |
+| "url"                  | string           | Link to the store on the Stores page.                        |
+| "item_count"           | number           | Available and held pieces. Sent by /api/stores and /api/store. |
+| "items"                | Item Object[]    | Only sent by `GET /api/store`.                               |
+| "closures"             | Closure Object[] | Upcoming closures. Only sent by `GET /api/store`.            |
 
-**Hours Object.** Keys `mon` through `sun`. Each is either `null` (closed) or `{"open": "HH:MM", "close": "HH:MM"}`.
+**Hours Object**
+Keys "mon" through "sun". Each is null when the store is closed, or an open and close time.
 
+**Hours Example**
 ```json
 {
     "mon": null,
@@ -168,17 +169,18 @@ A piece of clothing listed by a store.
 ```
 
 ### Slot Object
-
 One bookable time on one day, from `GET /api/availability`.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `time` | string | Start time, `HH:MM`. Send this as `time` when booking. |
-| `label` | string | Ready-to-display text, including why it's unavailable: `"2:00 pm"`, `"11:00 am, fully booked"`. |
-| `available` | boolean | Whether it can be booked. Disable the `<option>` when `false`. |
-| `reason` | string or null | `PAST`, `CLOSED`, `FULLY_BOOKED` or `ITEM_BOOKED` (this piece is already booked at that time). |
-| `spots_remaining` | number | Open places left in the slot. |
+**Slot Fields**
+| Field             | Type           | Description                                                      |
+|-------------------|----------------|------------------------------------------------------------------|
+| "time"            | string         | Start time. Send this as "time" when booking.                    |
+| "label"           | string         | Option text, like "2:00 pm" or "11:00 am, fully booked".         |
+| "available"       | boolean        | Whether it can be booked. Disable the `<option>` when false.     |
+| "reason"          | string or null | PAST, CLOSED, FULLY_BOOKED or ITEM_BOOKED.                       |
+| "spots_remaining" | number         | Open places left in the slot.                                    |
 
+**Slot Example**
 ```json
 {
     "time": "14:00",
@@ -190,27 +192,28 @@ One bookable time on one day, from `GET /api/availability`.
 ```
 
 ### Booking Object
-
 An in-store try-on appointment.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `booking_id` | number | Unique ID. |
-| `status` | string | `confirmed`, `completed`, `no_show` or `cancelled`. |
-| `status_label` | string | `"Confirmed"`, `"Completed"`, `"Missed"`, `"Cancelled"`. |
-| `is_upcoming` | boolean | Confirmed and today or later. |
-| `can_cancel` | boolean | Whether `cancel-booking` will accept it. Use it to show or hide the Cancel button. |
-| `cancel_reason` | string or null | `CUSTOMER_CANCELLED`, `ITEM_SOLD`, `ITEM_REMOVED` or `STORE_CANCELLED`. |
-| `cancel_message` | string or null | Display text for the reason, such as "This piece sold before your visit, so the appointment was cancelled." |
-| `store_message` | string or null | Optional note from the store. |
-| `date`, `date_label` | string | `"2026-11-13"` and `"Friday, November 13"`. |
-| `time`, `time_label` | string | `"14:00"` and `"2:00 pm"`. |
-| `name`, `email` | string | The shopper's details. |
-| `notes` | string or null | The shopper's note to the store. |
-| `item` | object | `{item_id, title, image, image_alt, price_display, size, condition, status, url}`. |
-| `store` | object | `{store_id, name, address, city, hours_display}`. |
-| `created_at` | string | When it was booked (ISO 8601). |
+**Booking Fields**
+| Field                  | Type           | Description                                                  |
+|------------------------|----------------|--------------------------------------------------------------|
+| "booking_id"           | number         | Unique ID. Read only; assigned by server.                    |
+| "status"               | string         | confirmed, completed, no_show or cancelled.                  |
+| "status_label"         | string         | "Confirmed", "Completed", "Missed" or "Cancelled".           |
+| "is_upcoming"          | boolean        | Confirmed and today or later.                                |
+| "can_cancel"           | boolean        | Whether cancel-booking will accept it. Use it to show or hide the Cancel button. |
+| "cancel_reason"        | string or null | CUSTOMER_CANCELLED, ITEM_SOLD, ITEM_REMOVED or STORE_CANCELLED. |
+| "cancel_message"       | string or null | Display text for the cancel reason.                          |
+| "store_message"        | string or null | Optional note from the store.                                |
+| "date", "date_label"   | string         | "2026-11-13" and "Friday, November 13".                      |
+| "time", "time_label"   | string         | "14:00" and "2:00 pm".                                       |
+| "name", "email"        | string         | The shopper's details.                                       |
+| "notes"                | string or null | The shopper's note to the store.                             |
+| "item"                 | object         | {item_id, title, image, image_alt, price_display, size, condition, status, url} |
+| "store"                | object         | {store_id, name, address, city, hours_display}               |
+| "created_at"           | string         | When it was booked (ISO 8601).                               |
 
+**Booking Example**
 ```json
 {
     "booking_id": 3,
@@ -251,39 +254,47 @@ An in-store try-on appointment.
 ```
 
 ### Closure Object
-
 A day, or part of a day, when a store isn't taking try-ons.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `closure_id` | number | Unique ID. |
-| `store_id` | string | The store. |
-| `date`, `date_label` | string | `"2026-11-16"` and `"Monday, November 16"`. |
-| `all_day` | boolean | `true` when there are no start and end times. |
-| `start_time`, `end_time` | string or null | `HH:MM` range, or `null` for all day. |
-| `reason` | string or null | Shown to shoppers, for example `"Holiday"`. |
+**Closure Fields**
+| Field                      | Type           | Description                                   |
+|----------------------------|----------------|-----------------------------------------------|
+| "closure_id"               | number         | Unique ID. Read only; assigned by server.     |
+| "store_id"                 | string         | The store.                                    |
+| "date", "date_label"       | string         | "2026-11-16" and "Monday, November 16".       |
+| "all_day"                  | boolean        | True when there are no start and end times.   |
+| "start_time", "end_time"   | string or null | Time range, or null for all day.              |
+| "reason"                   | string or null | Shown to shoppers, like "Holiday".            |
 
-## Featured ordering
+**Closure Example**
+```json
+{
+    "closure_id": 1,
+    "store_id": "second-story",
+    "date": "2026-11-26",
+    "date_label": "Thursday, November 26",
+    "all_day": false,
+    "start_time": "13:00",
+    "end_time": "15:00",
+    "reason": "Closed for Thanksgiving afternoon"
+}
+```
 
-`sort=featured` is the default and matches the "Featured" option in the Explore dropdown. Each piece gets a score from the signals below; the weights are in `FEATURED_WEIGHTS` in `config.php`.
+## Featured Sort
+`sort=featured` is the default on Explore. Each piece gets a score from these signals. The weights live in FEATURED_WEIGHTS in `config.php`.
 
-| Signal | Points | Why |
-|--------|--------|-----|
-| `pinned` | +100 | The store pinned it (up to 2 per store). |
-| `freshness` | 30, minus 2 for each day listed (never below 0) | New arrivals surface first. |
-| `interest` | 10 × ln(1 + favorites) + 15 × ln(1 + bookings in the last 14 days) | Popular pieces rise. The log keeps one very popular piece from taking over. |
-| `try_on` | +5 | Promotes the try-on demo. |
-| `held` | −20 | Still visible, but ranks below pieces you can book. |
-| `personal` | +8 | Only with a visitor token: the piece shares a size or category with something the visitor saved. |
+| Signal      | Points                                                        |
+|-------------|---------------------------------------------------------------|
+| "pinned"    | +100 if the store pinned it (up to 2 per store)               |
+| "freshness" | 30, minus 2 for each day it's been listed, never below 0      |
+| "interest"  | 10 × ln(1 + favorites) + 15 × ln(1 + bookings in the last 14 days) |
+| "try_on"    | +5 if it works with the try-on demo                           |
+| "held"      | −20 if it's on hold                                           |
+| "personal"  | +8 if it shares a size or category with something the visitor saved (visitor token only) |
 
-After scoring:
+Pinned pieces go first. The rest are dealt out one store at a time, best piece from each store per round, so the top row of Explore mixes shops. Ties go by "item_id" so the order stays put between refreshes. Add `explain=1` to get each piece's breakdown.
 
-1. Pinned pieces come first, highest score first.
-2. The rest take turns by store. Each round takes the best remaining piece from every store and sorts that round by score, so the first row of Explore mixes shops instead of showing one store's whole rack.
-3. Ties go by `item_id`, so the order doesn't shuffle between refreshes.
-
-Add `explain=1` to see each piece's breakdown:
-
+**Featured Score Example**
 ```json
 "featured_score": {
     "total": 123,
@@ -298,30 +309,25 @@ Add `explain=1` to see each piece's breakdown:
 }
 ```
 
-# Public endpoints
+# Public Endpoints
 
 ## GET /api/items
+Gets the catalog. Only available and held pieces come back unless you ask for others, so a sold piece drops off on the next refresh. A visitor token adds "is_favorite" to each item.
 
-Lists the catalog. All filters are optional and can be combined. Only `available` and `held` pieces come back by default, so a piece that sold is gone on the next refresh.
-
-**Query parameters**
-
-| Param | Example | Description |
-|-------|---------|-------------|
-| `store_id` | `north-loop` | Only this store's pieces. |
-| `category` | `outerwear` | See the Item Object for values. |
-| `size` | `M` | See the Item Object for values. |
-| `price` | `25-50`, `100+` | Preset range in whole dollars, matching the Explore dropdown values. The bottom is inclusive and the top exclusive, so $25 lands in `25-50`. |
-| `price_min`, `price_max` | `20`, `60` | Custom range in dollars. Ignored if `price` is sent. |
-| `q` | `leather jacket` | Searches title, description, category, material and store name. |
-| `sort` | `featured` | `featured` (default), `price-low`, `price-high` or `recent`. These match the Explore sort `<option>` values. |
-| `status` | `available,held,sold` | Comma-separated. Defaults to `available,held`. `removed` is never public. |
-| `explain` | `1` | With `sort=featured`, adds `featured_score` to every item. |
-
-**Headers (optional):** `X-Visitor-Token` adds `is_favorite` to each item and turns on the `personal` featured signal.
+**Query Parameters**
+| Param                    | Example               | Description                                                   |
+|--------------------------|-----------------------|---------------------------------------------------------------|
+| "store_id"               | north-loop            | Only this store's pieces.                                     |
+| "category"               | outerwear             | Any category from the Item Object.                            |
+| "size"                   | M                     | Any size from the Item Object.                                |
+| "price"                  | 25-50, 100+           | Preset range in dollars. Bottom inclusive, top exclusive.     |
+| "price_min", "price_max" | 20, 60                | Custom range in dollars. Ignored if "price" is sent.          |
+| "q"                      | leather jacket        | Searches title, description, category, material and store name. |
+| "sort"                   | featured              | featured (default), price-low, price-high or recent.          |
+| "status"                 | available,held,sold   | Comma-separated. Defaults to available,held. removed is never public. |
+| "explain"                | 1                     | Adds "featured_score" to every item.                          |
 
 **Response**
-
 ```json
 {
     "count": 9,
@@ -331,31 +337,24 @@ Lists the catalog. All filters are optional and can be combined. Only `available
 }
 ```
 
-**Errors:** `INVALID_STATUS`, `STORE_NOT_FOUND`, `INVALID_CATEGORY`, `INVALID_SIZE`, `INVALID_PRICE_RANGE`, `INVALID_SORT` (all `400`, all reported together).
+**Errors:** INVALID_STATUS, STORE_NOT_FOUND, INVALID_CATEGORY, INVALID_SIZE, INVALID_PRICE_RANGE, INVALID_SORT (400)
 
 ## GET /api/item
-
-One piece, with its full Store Object. Sold pieces are returned with `status: "sold"` so old links and favorites can say "This piece has sold" instead of breaking. Removed pieces return `404`.
-
-**Query parameters:** `item_id` (required).
-**Headers (optional):** `X-Visitor-Token` adds `is_favorite`.
+Gets one piece with its full Store Object. Takes `item_id` as a query parameter. Sold pieces still come back so old links can say the piece sold. Removed pieces return 404.
 
 **Response**
-
 ```json
 {
-    "item": { /* Item Object, with "store" as a full Store Object */ }
+    "item": { /* Item Object */ }
 }
 ```
 
-**Errors:** `ITEM_ID_REQUIRED` (400), `ITEM_NOT_FOUND` (404).
+**Errors:** ITEM_ID_REQUIRED (400), ITEM_NOT_FOUND (404)
 
 ## GET /api/filter-options
-
-The options for each Explore dropdown, with how many listed pieces match each one.
+Gets the choices for each Explore dropdown and how many listed pieces match each one.
 
 **Response**
-
 ```json
 {
     "stores": [{"value": "juniper-thread", "label": "Juniper & Thread", "item_count": 2}],
@@ -368,11 +367,9 @@ The options for each Explore dropdown, with how many listed pieces match each on
 ```
 
 ## GET /api/stores
-
-All stores, each with `item_count`.
+Gets every store as a Store Object.
 
 **Response**
-
 ```json
 {
     "count": 3,
@@ -381,27 +378,21 @@ All stores, each with `item_count`.
 ```
 
 ## GET /api/store
-
-One store with its listed pieces (`items`) and upcoming closures (`closures`).
-
-**Query parameters:** `store_id` (required).
+Gets one store with its listed pieces and upcoming closures. Takes `store_id` as a query parameter.
 
 **Response**
-
 ```json
 {
     "store": { /* Store Object with items and closures */ }
 }
 ```
 
-**Errors:** `STORE_ID_REQUIRED` (400), `STORE_NOT_FOUND` (404).
+**Errors:** STORE_ID_REQUIRED (400), STORE_NOT_FOUND (404)
 
 ## POST /api/create-visitor
+Creates a guest visitor and returns its token. Call it once, save the token in `localStorage`, and send it as "X-Visitor-Token" from then on. It doesn't take a body.
 
-Creates a guest visitor and returns its token. Call it once, keep the token in `localStorage`, and send it as `X-Visitor-Token` after that. It doesn't ask for any personal details.
-
-**Response (201)**
-
+**Response**
 ```json
 {
     "success": true,
@@ -411,30 +402,22 @@ Creates a guest visitor and returns its token. Call it once, keep the token in `
 ```
 
 ## GET /api/favorites
-
-The visitor's saved pieces, newest first. Sold pieces stay in the list with `status: "sold"`. Each item has `is_favorite: true` and `saved_at`.
-
-**Headers:** `X-Visitor-Token` (required).
+Gets the visitor's saved pieces, newest first. Needs a visitor token. Sold pieces stay in the list with status "sold".
 
 **Response**
-
 ```json
 {
     "count": 1,
-    "items": [ /* Item Objects */ ]
+    "items": [ /* Item Objects with "saved_at" */ ]
 }
 ```
 
-**Errors:** `VISITOR_TOKEN_REQUIRED`, `VISITOR_TOKEN_INVALID` (401).
+**Errors:** VISITOR_TOKEN_REQUIRED, VISITOR_TOKEN_INVALID (401)
 
 ## POST /api/add-favorite
-
-Saves a piece. Saving one that's already saved isn't an error.
-
-**Headers:** `X-Visitor-Token` (required).
+Saves a piece to the visitor's favorites. Needs a visitor token. Saving something twice isn't an error.
 
 **Request Body**
-
 ```json
 {
     "item_id": "item-03"
@@ -442,7 +425,6 @@ Saves a piece. Saving one that's already saved isn't an error.
 ```
 
 **Response**
-
 ```json
 {
     "success": true,
@@ -453,18 +435,12 @@ Saves a piece. Saving one that's already saved isn't an error.
 }
 ```
 
-**Errors:** `ITEM_ID_REQUIRED` (400), visitor errors (401), `ITEM_NOT_FOUND` (404), `ITEM_SOLD` (409).
+**Errors:** ITEM_ID_REQUIRED (400), visitor token errors (401), ITEM_NOT_FOUND (404), ITEM_SOLD (409)
 
 ## DELETE /api/remove-favorite
-
-Removes a saved piece. Removing one that isn't saved isn't an error.
-
-**Headers:** `X-Visitor-Token` (required).
-
-**Request Body:** `{"item_id": "item-03"}` (or `?item_id=` in the URL).
+Removes a saved piece. Needs a visitor token. Takes the same body as add-favorite, or `?item_id=` in the URL.
 
 **Response**
-
 ```json
 {
     "success": true,
@@ -476,19 +452,16 @@ Removes a saved piece. Removing one that isn't saved isn't an error.
 ```
 
 ## GET /api/availability
+Gets the bookable slots for one day. Use "label" as the option text and disable any slot where "available" is false.
 
-Bookable slots for one day. Use it to fill the time `<select>` on the booking page: `label` is the option text and `available: false` means `disabled`.
-
-**Query parameters**
-
-| Param | Required | Description |
-|-------|----------|-------------|
-| `date` | Yes | `YYYY-MM-DD`, from today up to 30 days ahead (`BOOKING_WINDOW_DAYS`). |
-| `item_id` | One of these | The store comes from the piece, and slots where the piece is already booked are marked `ITEM_BOOKED`. Preferred on the booking page. |
-| `store_id` | One of these | A store's general availability. |
+**Query Parameters**
+| Param      | Required    | Description                                                     |
+|------------|-------------|-----------------------------------------------------------------|
+| "date"     | Yes         | Today up to 30 days out (BOOKING_WINDOW_DAYS).                  |
+| "item_id"  | One of these | Uses the piece's store and marks slots where it's already booked. Use this on the booking page. |
+| "store_id" | One of these | A store's general availability.                                |
 
 **Response**
-
 ```json
 {
     "store_id": "juniper-thread",
@@ -502,18 +475,14 @@ Bookable slots for one day. Use it to fill the time `<select>` on the booking pa
 }
 ```
 
-When the store is closed that day, `closed` is `true`, `closed_reason` explains why ("The shop is closed on Mondays." or a closure's reason) and `slots` is empty.
+When the store is closed that day, "closed" is true, "closed_reason" says why and "slots" is empty.
 
-**Errors:** `STORE_ID_REQUIRED`, `DATE_REQUIRED`, `DATE_INVALID`, `DATE_IN_PAST`, `DATE_OUT_OF_RANGE` (400), `ITEM_NOT_FOUND`, `STORE_NOT_FOUND` (404).
+**Errors:** STORE_ID_REQUIRED, DATE_REQUIRED, DATE_INVALID, DATE_IN_PAST, DATE_OUT_OF_RANGE (400), ITEM_NOT_FOUND, STORE_NOT_FOUND (404)
 
 ## POST /api/create-booking
-
-Books an in-store try-on. The field names match the booking form's `data-field` names. Show the returned confirmation code on the confirmation page, since the shopper needs it to change or cancel later. The slot check and the insert run in one locked transaction, so two shoppers can't grab the last spot at the same moment.
-
-**Headers (optional):** `X-Visitor-Token` links the booking to the visitor so it appears in My Appointments.
+Books an in-store try-on and returns a confirmation code. Show the code on the confirmation page, since the shopper needs it to change or cancel later. A visitor token is optional and puts the booking in My Appointments.
 
 **Request Body**
-
 ```json
 {
     "booking": {
@@ -527,17 +496,17 @@ Books an in-store try-on. The field names match the booking form's `data-field` 
 }
 ```
 
-| Field | Required | Rules |
-|-------|----------|-------|
-| `item_id` | Yes | Must be `available`. |
-| `name` | Yes | Up to 100 characters. |
-| `email` | Yes | A valid email address. |
-| `date` | Yes | Today up to 30 days ahead, on a day the store is open. |
-| `time` | Yes | One of the `time` values from `/api/availability` that's `available`. |
-| `notes` | No | Up to 500 characters. |
+**Booking Fields**
+| Field     | Required | Rules                                                 |
+|-----------|----------|-------------------------------------------------------|
+| "item_id" | Yes      | Must be available.                                    |
+| "name"    | Yes      | Up to 100 characters.                                 |
+| "email"   | Yes      | A valid email address.                                |
+| "date"    | Yes      | Today up to 30 days out, on a day the store is open.  |
+| "time"    | Yes      | An available "time" from /api/availability.           |
+| "notes"   | No       | Up to 500 characters.                                 |
 
-**Response (201)**
-
+**Response (Success)**
 ```json
 {
     "success": true,
@@ -549,7 +518,6 @@ Books an in-store try-on. The field names match the booking form's `data-field` 
 ```
 
 **Response (Error)**
-
 ```json
 {
     "errors": [
@@ -562,35 +530,24 @@ Books an in-store try-on. The field names match the booking form's `data-field` 
 }
 ```
 
-**Errors:** field errors `NAME_REQUIRED`, `NAME_TOO_LONG`, `EMAIL_REQUIRED`, `EMAIL_INVALID`, `DATE_*`, `TIME_REQUIRED`, `TIME_INVALID`, `NOTES_TOO_LONG` (400, reported together). `ITEM_NOT_FOUND` (404). `ITEM_UNAVAILABLE` (the piece is held or sold), `STORE_CLOSED`, `SLOT_UNAVAILABLE` (409).
+**Errors:** NAME_REQUIRED, NAME_TOO_LONG, EMAIL_REQUIRED, EMAIL_INVALID, DATE_*, TIME_REQUIRED, TIME_INVALID, NOTES_TOO_LONG (400), ITEM_NOT_FOUND (404), ITEM_UNAVAILABLE, STORE_CLOSED, SLOT_UNAVAILABLE (409)
 
 ## GET /api/booking
-
-One booking, for the confirmation page or a "manage my booking" link.
-
-**Query parameters:** `booking_id` (required) and `confirmation_code`.
-**Headers:** instead of the code, the `X-Visitor-Token` that made the booking also works.
+Gets one booking. Takes `booking_id` and `confirmation_code` as query parameters. The visitor token that made the booking works in place of the code.
 
 **Response**
-
 ```json
 {
     "booking": { /* Booking Object */ }
 }
 ```
 
-**Errors:** `BOOKING_ID_REQUIRED` (400), `BOOKING_AUTH_REQUIRED`, `AUTH_FAILURE` (401). A missing booking also returns `AUTH_FAILURE`, so booking IDs can't be probed.
+**Errors:** BOOKING_ID_REQUIRED (400), BOOKING_AUTH_REQUIRED, AUTH_FAILURE (401). A booking that doesn't exist also returns AUTH_FAILURE.
 
 ## GET /api/bookings
-
-My Appointments: every booking made with this visitor token. Cancelled bookings are included so shoppers can see why (for example, the piece sold).
-
-**Headers:** `X-Visitor-Token` (required).
-
-**Query parameters:** `scope`, which is `upcoming` (default: today onward, soonest first), `past` (most recent first) or `all`.
+Gets every booking made with the visitor's token, for My Appointments. Cancelled bookings are included so the shopper can see why. Takes an optional `scope`: upcoming (default), past or all.
 
 **Response**
-
 ```json
 {
     "count": 1,
@@ -600,11 +557,9 @@ My Appointments: every booking made with this visitor token. Cancelled bookings 
 ```
 
 ## PUT /api/cancel-booking
+Cancels an upcoming booking and frees its slot. The booking is kept with status "cancelled".
 
-Cancels an upcoming confirmed booking and frees its slot. The booking is kept with `status: "cancelled"` and `cancel_reason: "CUSTOMER_CANCELLED"`. Ask the shopper to confirm before calling this.
-
-**Request Body** (with the confirmation code)
-
+**Request Body**
 ```json
 {
     "auth": {
@@ -614,16 +569,7 @@ Cancels an upcoming confirmed booking and frees its slot. The booking is kept wi
 }
 ```
 
-Or, with the visitor token in the `X-Visitor-Token` header:
-
-```json
-{
-    "booking_id": 3
-}
-```
-
 **Response**
-
 ```json
 {
     "success": true,
@@ -633,14 +579,12 @@ Or, with the visitor token in the `X-Visitor-Token` header:
 }
 ```
 
-**Errors:** auth errors (401), `BOOKING_NOT_CANCELLABLE` (409).
+**Errors:** auth errors (401), BOOKING_NOT_CANCELLABLE (409)
 
 ## PUT /api/modify-booking
-
-Reschedules an upcoming booking or updates its note. Send only what changes. A new date or time is checked against availability, ignoring the booking's own current slot.
+Reschedules an upcoming booking or changes its note. Only send the fields that change.
 
 **Request Body**
-
 ```json
 {
     "auth": {
@@ -655,10 +599,7 @@ Reschedules an upcoming booking or updates its note. Send only what changes. A n
 }
 ```
 
-(With `X-Visitor-Token`, `auth` can be just `{"booking_id": 3}`.)
-
 **Response**
-
 ```json
 {
     "success": true,
@@ -668,14 +609,12 @@ Reschedules an upcoming booking or updates its note. Send only what changes. A n
 }
 ```
 
-**Errors:** `NO_CHANGES`, field errors (400), auth errors (401), `BOOKING_NOT_MODIFIABLE`, `ITEM_UNAVAILABLE`, `STORE_CLOSED`, `SLOT_UNAVAILABLE` (409).
+**Errors:** NO_CHANGES, field errors (400), auth errors (401), BOOKING_NOT_MODIFIABLE, ITEM_UNAVAILABLE, STORE_CLOSED, SLOT_UNAVAILABLE (409)
 
 ## GET /api/try-on-options
-
-Sample models and the pieces that work with the simulated try-on. Always `is_demo: true`.
+Gets the sample models and the pieces that work with the simulated try-on.
 
 **Response**
-
 ```json
 {
     "is_demo": true,
@@ -694,13 +633,9 @@ Sample models and the pieces that work with the simulated try-on. Always `is_dem
 ```
 
 ## GET /api/try-on-result
-
-The result for a model and a piece. If a composite image has been made for that pair (added to `try_on_results` through `data/sample-try-on.json`), `result_type` is `"composite"`. Otherwise the piece's own photo comes back as a `"styling_reference"`, with alt text saying it isn't a generated try-on.
-
-**Query parameters:** `model_id`, `item_id` (both required).
+Gets the try-on result for a model and a piece. Takes `model_id` and `item_id` as query parameters. If there's a composite image for that pair, "result_type" is "composite". Otherwise it returns the piece's own photo as a "styling_reference".
 
 **Response**
-
 ```json
 {
     "is_demo": true,
@@ -713,14 +648,12 @@ The result for a model and a piece. If a composite image has been made for that 
 }
 ```
 
-**Errors:** `MODEL_ID_REQUIRED`, `ITEM_ID_REQUIRED`, `TRY_ON_UNSUPPORTED` (400), `MODEL_NOT_FOUND`, `ITEM_NOT_FOUND` (404).
+**Errors:** MODEL_ID_REQUIRED, ITEM_ID_REQUIRED, TRY_ON_UNSUPPORTED (400), MODEL_NOT_FOUND, ITEM_NOT_FOUND (404)
 
 ## GET /api/impact
-
-Sustainability numbers for the Home and Learn pages, recalculated on every request. Each sold piece counts as one garment kept in use. The CO₂ and water figures come from rough per-category estimates in `IMPACT_ESTIMATES` (`config.php`), and the response flags them as estimates.
+Gets the sustainability numbers for the Home and Learn pages. Each sold piece counts as one garment kept in use. The CO2 and water numbers are rough averages from IMPACT_ESTIMATES in `config.php`.
 
 **Response**
-
 ```json
 {
     "pieces_rehomed": 1,
@@ -735,23 +668,18 @@ Sustainability numbers for the Home and Learn pages, recalculated on every reque
 }
 ```
 
-# Store endpoints
-
-Every store endpoint needs both headers:
+# Store Endpoints
+Every store endpoint needs these two headers. A store can only see its own items, bookings and closures, and anything from another store returns 404.
 
 ```
 X-Store-Id: second-story
 X-Auth-Code: <the store's auth code>
 ```
 
-Missing headers return `401 STORE_AUTH_REQUIRED` and wrong credentials return `401 AUTH_FAILURE`. A store can only see and change its own items, bookings and closures. Anything belonging to another store answers `404`, as if it didn't exist.
-
 ## POST /api/store-login
-
-Checks the credentials and returns the store's profile. The server doesn't keep a session, so hold on to the two header values and send them with every store request.
+Checks the store's credentials and returns its profile. There's no session, so keep sending both headers on every request.
 
 **Response**
-
 ```json
 {
     "success": true,
@@ -761,11 +689,9 @@ Checks the credentials and returns the store's profile. The server doesn't keep 
 ```
 
 ## GET /api/store-summary
-
-Counts for the top of the dashboard.
+Gets the counts for the top of the store dashboard.
 
 **Response**
-
 ```json
 {
     "store_id": "second-story",
@@ -780,13 +706,9 @@ Counts for the top of the dashboard.
 ```
 
 ## GET /api/store-items
-
-The store's own inventory, newest first. Each item also has `favorites_count` and `upcoming_bookings`.
-
-**Query parameters:** `status`, comma-separated. Defaults to `available,held,sold`. Add `removed` to see archived listings.
+Gets the store's own inventory, newest first. Takes an optional comma-separated `status` that defaults to available,held,sold. Add removed to see archived listings.
 
 **Response**
-
 ```json
 {
     "count": 4,
@@ -795,11 +717,9 @@ The store's own inventory, newest first. Each item also has `favorites_count` an
 ```
 
 ## POST /api/create-item
-
-Adds a listing. It's `available` and shows on Explore immediately. The photo is sent as a base64 data URL; the server checks the actual file contents (JPG, PNG or WEBP, up to 5 MB), saves it to `uploads/items/`, and stores only the path.
+Creates a new listing. It shows up on Explore right away. The photo is sent as a base64 data URL and saved to `uploads/items/`.
 
 **Request Body**
-
 ```json
 {
     "item": {
@@ -817,19 +737,19 @@ Adds a listing. It's `available` and shows on Explore immediately. The photo is 
 }
 ```
 
-| Field | Required | Rules |
-|-------|----------|-------|
-| `title` | Yes | Up to 80 characters. |
-| `category`, `size`, `condition` | Yes | One of the values listed in the Item Object. |
-| `price_cents` | Yes | Whole number from 100 ($1) to 1,000,000 ($10,000). |
-| `description` | Yes | 10 to 1,000 characters. |
-| `image_b64` | Yes | `data:image/(jpeg\|png\|webp);base64,...`, up to 5 MB. |
-| `image_alt` | Yes | 5 to 250 characters, and it shouldn't start with "Image of" or "Photo of" (screen readers already say it's an image). |
-| `material` | No | Up to 80 characters. |
-| `try_on_supported` | No | Boolean, default `false`. |
+**Item Fields**
+| Field                             | Required | Rules                                                   |
+|-----------------------------------|----------|---------------------------------------------------------|
+| "title"                           | Yes      | Up to 80 characters.                                    |
+| "category", "size", "condition"   | Yes      | A value from the Item Object.                           |
+| "price_cents"                     | Yes      | Whole number from 100 to 1,000,000.                     |
+| "description"                     | Yes      | 10 to 1,000 characters.                                 |
+| "image_b64"                       | Yes      | JPG, PNG or WEBP data URL, up to 5 MB.                  |
+| "image_alt"                       | Yes      | 5 to 250 characters. Can't start with "Image of" or "Photo of". |
+| "material"                        | No       | Up to 80 characters.                                    |
+| "try_on_supported"                | No       | Defaults to false.                                      |
 
-**Response (201)**
-
+**Response (Success)**
 ```json
 {
     "success": true,
@@ -839,14 +759,12 @@ Adds a listing. It's `available` and shows on Explore immediately. The photo is 
 }
 ```
 
-**Errors:** `TITLE_REQUIRED`, `TITLE_TOO_LONG`, `CATEGORY_INVALID`, `SIZE_INVALID`, `CONDITION_INVALID`, `PRICE_INVALID`, `DESCRIPTION_REQUIRED`, `DESCRIPTION_TOO_LONG`, `MATERIAL_TOO_LONG`, `IMAGE_REQUIRED`, `IMAGE_INVALID`, `IMAGE_TOO_LARGE`, `IMAGE_ALT_REQUIRED`, `IMAGE_ALT_LENGTH`, `IMAGE_ALT_REDUNDANT` (400, reported together).
+**Errors:** TITLE_REQUIRED, TITLE_TOO_LONG, CATEGORY_INVALID, SIZE_INVALID, CONDITION_INVALID, PRICE_INVALID, DESCRIPTION_REQUIRED, DESCRIPTION_TOO_LONG, MATERIAL_TOO_LONG, IMAGE_REQUIRED, IMAGE_INVALID, IMAGE_TOO_LARGE, IMAGE_ALT_REQUIRED, IMAGE_ALT_LENGTH, IMAGE_ALT_REDUNDANT (400)
 
 ## PUT /api/modify-item
-
-Edits a listing. Send only the fields that change. A new `image_b64` must come with a new `image_alt`; the old photo file is deleted. Status can't be changed here (use `update-item-status`, which also updates bookings).
+Modifies a listing. Only send the fields that change. A new photo needs new alt text too. Status changes go through update-item-status instead.
 
 **Request Body**
-
 ```json
 {
     "item_id": "item-11",
@@ -858,7 +776,6 @@ Edits a listing. Send only the fields that change. A new `image_b64` must come w
 ```
 
 **Response**
-
 ```json
 {
     "success": true,
@@ -868,20 +785,12 @@ Edits a listing. Send only the fields that change. A new `image_b64` must come w
 }
 ```
 
-**Errors:** `NO_CHANGES`, `USE_STATUS_ENDPOINT`, any `create-item` field error (400), `ITEM_NOT_FOUND` (404).
+**Errors:** NO_CHANGES, USE_STATUS_ENDPOINT, any create-item field error (400), ITEM_NOT_FOUND (404)
 
 ## PUT /api/update-item-status
-
-Marks a piece `available`, `held` or `sold`, and applies the side effects in one transaction:
-
-| New status | What also happens |
-|------------|-------------------|
-| `sold` | Records `sold_at`, unpins it, and cancels its upcoming confirmed bookings with `ITEM_SOLD`. Explore drops it on the next refresh; Favorites keep it, flagged sold; the impact stat goes up. |
-| `held` | No new bookings can be made. Existing bookings are kept, since the hold may be for that shopper. |
-| `available` | Bookable again. Clears `sold_at` if it had been marked sold by mistake. Also restores an archived (`removed`) listing. |
+Marks a piece available, held or sold. Selling a piece unpins it and cancels its upcoming bookings with ITEM_SOLD. Holding it stops new bookings but keeps existing ones. Setting it back to available also restores a removed listing.
 
 **Request Body**
-
 ```json
 {
     "item_id": "item-03",
@@ -890,7 +799,6 @@ Marks a piece `available`, `held` or `sold`, and applies the side effects in one
 ```
 
 **Response**
-
 ```json
 {
     "success": true,
@@ -903,16 +811,19 @@ Marks a piece `available`, `held` or `sold`, and applies the side effects in one
 }
 ```
 
-**Errors:** `INVALID_STATUS` (400), `ITEM_NOT_FOUND` (404).
+**Errors:** INVALID_STATUS (400), ITEM_NOT_FOUND (404)
 
 ## DELETE /api/delete-item
+Archives a listing by setting its status to removed. It disappears from the public site and its upcoming bookings are cancelled with ITEM_REMOVED. Use update-item-status to bring it back.
 
-Archives a listing (`status: "removed"`). It disappears from the public site and its upcoming bookings are cancelled with `ITEM_REMOVED`, but the row is kept so booking history still makes sense. Restore it with `update-item-status`.
-
-**Request Body:** `{"item_id": "item-11"}`
+**Request Body**
+```json
+{
+    "item_id": "item-11"
+}
+```
 
 **Response**
-
 ```json
 {
     "success": true,
@@ -923,14 +834,12 @@ Archives a listing (`status: "removed"`). It disappears from the public site and
 }
 ```
 
-**Errors:** `ITEM_NOT_FOUND` (404), `ALREADY_REMOVED` (409).
+**Errors:** ITEM_NOT_FOUND (404), ALREADY_REMOVED (409)
 
 ## PUT /api/set-featured
-
-Pins or unpins a piece. Pinned pieces lead the Featured sort. Each store can pin up to 2 (`MAX_PINNED_PER_STORE`). Selling or archiving a piece unpins it automatically.
+Pins or unpins a piece at the top of Featured. Each store can pin 2 (MAX_PINNED_PER_STORE).
 
 **Request Body**
-
 ```json
 {
     "item_id": "item-11",
@@ -939,7 +848,6 @@ Pins or unpins a piece. Pinned pieces lead the Featured sort. Each store can pin
 ```
 
 **Response**
-
 ```json
 {
     "success": true,
@@ -949,22 +857,19 @@ Pins or unpins a piece. Pinned pieces lead the Featured sort. Each store can pin
 }
 ```
 
-**Errors:** `PINNED_REQUIRED` (400), `ITEM_NOT_FOUND` (404), `ITEM_NOT_PINNABLE`, `PIN_LIMIT_REACHED` (409).
+**Errors:** PINNED_REQUIRED (400), ITEM_NOT_FOUND (404), ITEM_NOT_PINNABLE, PIN_LIMIT_REACHED (409)
 
 ## GET /api/store-bookings
+Gets the store's try-on appointments, including shopper contact details.
 
-The store's try-on appointments, including the shoppers' contact details.
-
-**Query parameters**
-
-| Param | Description |
-|-------|-------------|
-| `scope` | `upcoming` (default, soonest first), `past` or `all`. Defaults to `all` when `date` is sent. |
-| `date` | Only this day, `YYYY-MM-DD`. |
-| `status` | `confirmed`, `completed`, `no_show` or `cancelled`. |
+**Query Parameters**
+| Param    | Description                                                         |
+|----------|---------------------------------------------------------------------|
+| "scope"  | upcoming (default), past or all. Defaults to all when "date" is sent. |
+| "date"   | Only this day.                                                      |
+| "status" | confirmed, completed, no_show or cancelled.                         |
 
 **Response**
-
 ```json
 {
     "count": 2,
@@ -974,11 +879,9 @@ The store's try-on appointments, including the shoppers' contact details.
 ```
 
 ## PUT /api/update-booking-status
-
-Records how an appointment went. `completed` with `"item_sold": true` also marks the piece sold, with the same side effects as `update-item-status`, so the visit and the sale go in together. `cancelled` sets `cancel_reason: "STORE_CANCELLED"`. A cancelled booking can't be set back to `confirmed`, since its slot may have been given away.
+Records how an appointment went. Sending completed with "item_sold": true also marks the piece sold. A cancelled booking can't go back to confirmed.
 
 **Request Body**
-
 ```json
 {
     "booking_id": 1,
@@ -989,7 +892,6 @@ Records how an appointment went. `completed` with `"item_sold": true` also marks
 ```
 
 **Response**
-
 ```json
 {
     "success": true,
@@ -999,16 +901,16 @@ Records how an appointment went. `completed` with `"item_sold": true` also marks
 }
 ```
 
-`cancelled_bookings` lists other bookings for the same piece that were cancelled because it sold.
+"cancelled_bookings" lists other bookings for the same piece that were cancelled because it sold.
 
-**Errors:** `BOOKING_ID_REQUIRED`, `INVALID_STATUS`, `MESSAGE_TOO_LONG`, `ITEM_SOLD_NEEDS_COMPLETED` (400), `BOOKING_NOT_FOUND` (404), `BOOKING_CANCELLED` (409).
+**Errors:** BOOKING_ID_REQUIRED, INVALID_STATUS, MESSAGE_TOO_LONG, ITEM_SOLD_NEEDS_COMPLETED (400), BOOKING_NOT_FOUND (404), BOOKING_CANCELLED (409)
 
 ## PUT /api/modify-store
+Modifies the store's details, hours and slot settings. Only send the fields that change. Bookings that fall outside new hours are kept.
 
-Edits the store's public details, hours and booking slots. Send only what changes. Existing bookings are kept even if they now fall outside the new hours.
+Editable fields are "name", "neighborhood", "address", "city", "description", "image_alt", "hours" (all seven days), "slot_minutes" (15, 20, 30, 45, 60, 90 or 120) and "slot_capacity" (1 to 20).
 
 **Request Body**
-
 ```json
 {
     "store": {
@@ -1028,10 +930,7 @@ Edits the store's public details, hours and booking slots. Send only what change
 }
 ```
 
-Editable fields: `name`, `neighborhood`, `address`, `city`, `description`, `image_alt`, `hours` (all seven days), `slot_minutes` (15, 20, 30, 45, 60, 90 or 120), `slot_capacity` (1 to 20).
-
 **Response**
-
 ```json
 {
     "success": true,
@@ -1040,14 +939,12 @@ Editable fields: `name`, `neighborhood`, `address`, `city`, `description`, `imag
 }
 ```
 
-**Errors:** `NO_CHANGES`, `<FIELD>_INVALID`, `IMAGE_ALT_*`, `HOURS_INVALID`, `SLOT_MINUTES_INVALID`, `SLOT_CAPACITY_INVALID`, `UNKNOWN_FIELD` (400).
+**Errors:** NO_CHANGES, <FIELD>_INVALID, IMAGE_ALT_*, HOURS_INVALID, SLOT_MINUTES_INVALID, SLOT_CAPACITY_INVALID, UNKNOWN_FIELD (400)
 
 ## GET /api/store-closures
-
-The store's upcoming closures.
+Gets the store's upcoming closures.
 
 **Response**
-
 ```json
 {
     "count": 1,
@@ -1056,11 +953,9 @@ The store's upcoming closures.
 ```
 
 ## POST /api/create-closure
-
-Blocks off a whole day (leave out the times) or part of one. Those slots show as `CLOSED` in availability. Bookings already in that window stay booked. They come back in `conflicting_bookings` so the store can contact those shoppers.
+Creates a closure for a whole day or part of one. Leave out the times for all day. Bookings already in that window stay booked and come back in "conflicting_bookings" so the store can contact those shoppers.
 
 **Request Body**
-
 ```json
 {
     "closure": {
@@ -1072,8 +967,7 @@ Blocks off a whole day (leave out the times) or part of one. Those slots show as
 }
 ```
 
-**Response (201)**
-
+**Response**
 ```json
 {
     "success": true,
@@ -1083,16 +977,19 @@ Blocks off a whole day (leave out the times) or part of one. Those slots show as
 }
 ```
 
-**Errors:** `DATE_INVALID`, `DATE_IN_PAST`, `TIME_RANGE_INCOMPLETE`, `TIME_RANGE_INVALID`, `REASON_TOO_LONG` (400).
+**Errors:** DATE_INVALID, DATE_IN_PAST, TIME_RANGE_INCOMPLETE, TIME_RANGE_INVALID, REASON_TOO_LONG (400)
 
 ## DELETE /api/delete-closure
+Deletes a closure so those times can be booked again.
 
-Removes a closure so those times can be booked again.
-
-**Request Body:** `{"closure_id": 1}`
+**Request Body**
+```json
+{
+    "closure_id": 1
+}
+```
 
 **Response**
-
 ```json
 {
     "success": true,
@@ -1101,24 +998,23 @@ Removes a closure so those times can be booked again.
 }
 ```
 
-**Errors:** `CLOSURE_ID_REQUIRED` (400), `CLOSURE_NOT_FOUND` (404).
+**Errors:** CLOSURE_ID_REQUIRED (400), CLOSURE_NOT_FOUND (404)
 
-# Error codes
+# Error Codes
+Codes that can come back from any endpoint.
 
-Codes shared across endpoints:
-
-| Code | Status | Meaning |
-|------|--------|---------|
-| `METHOD_NOT_ALLOWED` | 405 | Wrong HTTP method for this endpoint. The `Allow` header lists the right one. |
-| `INVALID_JSON` | 400 | The body isn't a JSON object. |
-| `ENDPOINT_NOT_FOUND` | 404 | No endpoint at that path. |
-| `FORBIDDEN` | 403 | An internal file was requested (config, database, tests). |
-| `VISITOR_TOKEN_REQUIRED` / `VISITOR_TOKEN_INVALID` | 401 | Missing or unknown `X-Visitor-Token`. |
-| `STORE_AUTH_REQUIRED` | 401 | Missing `X-Store-Id` or `X-Auth-Code`. |
-| `AUTH_FAILURE` | 401 | Wrong store auth code, or wrong booking ID / confirmation code. |
-| `BOOKING_AUTH_REQUIRED` | 401 | No confirmation code or visitor token sent for a booking. |
-| `ITEM_NOT_FOUND` / `STORE_NOT_FOUND` | 404 | No such item or store (or it belongs to another store). |
-| `ITEM_UNAVAILABLE` | 409 | The piece is held or sold, so it can't be booked. |
-| `SLOT_UNAVAILABLE` | 409 | The chosen time is past, closed, full, or the piece is already booked then. |
-| `STORE_CLOSED` | 409 | The store is closed on the chosen date. |
-| `SERVER_ERROR` | 500 | Something unexpected happened. Details go to the PHP error log, never to the response. |
+| Code                                         | Status | Meaning                                                     |
+|----------------------------------------------|--------|-------------------------------------------------------------|
+| METHOD_NOT_ALLOWED                           | 405    | Wrong HTTP method. The Allow header lists the right one.    |
+| INVALID_JSON                                 | 400    | The body isn't a JSON object.                               |
+| ENDPOINT_NOT_FOUND                           | 404    | No endpoint at that path.                                   |
+| FORBIDDEN                                    | 403    | Someone requested an internal file like the config or database. |
+| VISITOR_TOKEN_REQUIRED, VISITOR_TOKEN_INVALID | 401   | Missing or unknown visitor token.                           |
+| STORE_AUTH_REQUIRED                          | 401    | Missing X-Store-Id or X-Auth-Code.                          |
+| AUTH_FAILURE                                 | 401    | Wrong store auth code, or wrong booking ID or confirmation code. |
+| BOOKING_AUTH_REQUIRED                        | 401    | No confirmation code or visitor token sent for a booking.   |
+| ITEM_NOT_FOUND, STORE_NOT_FOUND              | 404    | No such item or store, or it belongs to another store.      |
+| ITEM_UNAVAILABLE                             | 409    | The piece is held or sold and can't be booked.              |
+| SLOT_UNAVAILABLE                             | 409    | The time is past, closed, full, or the piece is already booked then. |
+| STORE_CLOSED                                 | 409    | The store is closed that day.                               |
+| SERVER_ERROR                                 | 500    | Something broke on the server. Details go to the PHP error log. |
