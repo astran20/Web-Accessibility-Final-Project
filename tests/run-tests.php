@@ -481,6 +481,8 @@ foreach (["/config.php", "/data/sample-store-auth.json", "/api/helpers", "/api/d
 }
 $res = api("GET", "/index.html");
 check("static pages are still served", $res["status"] === 200);
+$res = api("GET", "/demo/");
+check("the demo console is served at /demo/", $res["status"] === 200);
 $res = api("GET", "/api-config.js");
 check("api-config.js is served as a static file, not caught by the /api route", $res["status"] === 200);
 $res = api("OPTIONS", "/api/create-booking", null, ["Origin" => "https://astran20.github.io", "Access-Control-Request-Method" => "POST"]);
