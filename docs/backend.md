@@ -1,7 +1,7 @@
 # Back End Notes
 
 ## Settings
-Configuration for the backend is in  `config.php`.
+Configuration for the backend is in `config.php`.
 
 | Setting                                            | What it does                                                        |
 |----------------------------------------------------|---------------------------------------------------------------------|

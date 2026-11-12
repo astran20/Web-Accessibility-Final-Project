@@ -33,7 +33,8 @@ The database builds itself on the first request, using the sample stores, pieces
 
 `demo/` is a plain test page for API demonstrations. 
 
-The following demostores come pre-installed when using the demo console with the default database.
+The following demo stores come pre-installed when using the demo console with the default database.
+
 | Store | Auth code |
 |-------|-----------|
 | Second Story Vintage | `SecondStory-demo-2026` |
