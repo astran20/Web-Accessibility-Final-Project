@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#F6F3EC">
+    <title>How Virtual Try-On Works | RETHREAD</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="rethread-site">
+    <a class="rt-skip-link" href="#main-content">Skip to main content</a>
+    <header class="rt-header">
+      <div class="rt-header-inner">
+        <a class="rt-wordmark" href="index.html" aria-label="RETHREAD home">RETHREAD<span aria-hidden="true">.</span></a>
+        <nav class="rt-nav" aria-label="Main navigation">
+          <a href="index.html#clothes">Explore</a>
+          <a href="stores.html">Stores</a>
+          <a href="favorites.html">Favorites</a>
+          <a href="virtual-try-on.html">Virtual Try-On</a>
+          <a href="technology.html" aria-current="page">How It Works</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="rt-container rt-page" id="main-content">
+      <div class="rt-page-heading">
+        <p class="rt-eyebrow">THE TECH BEHIND THE DEMO</p>
+        <h1>How virtual try-on works.</h1>
+        <p>Augmented reality (AR) and artificial intelligence (AI) can show how a piece might look on you before you leave home. Here is how the real technology works, what our demo imitates, and why it matters for secondhand fashion.</p>
+      </div>
+
+      <section class="rt-tech-section" aria-labelledby="problem-heading">
+        <p class="rt-eyebrow">THE PROBLEM</p>
+        <h2 id="problem-heading">You can't tell how clothes fit until you try them on.</h2>
+        <p class="rt-tech-lead">Fit is the top reason people return clothing, and many shoppers order several sizes just to send most of them back. For a secondhand shop, the same problem means wasted trips across town for pieces that don't work.</p>
+        <ul class="rt-stat-grid">
+          <li class="rt-stat">
+            <span class="rt-stat-number">45%</span>
+            <span>of clothing returns were caused by poor fit in 2022. <a class="rt-cite" href="#source-1" aria-label="Source 1">[1]</a></span>
+          </li>
+          <li class="rt-stat">
+            <span class="rt-stat-number">61%</span>
+            <span>of shoppers named poor fit as a main reason they return items. <a class="rt-cite" href="#source-2" aria-label="Source 2">[2]</a></span>
+          </li>
+          <li class="rt-stat">
+            <span class="rt-stat-number">1 truck</span>
+            <span>of textiles is landfilled or burned every second, worldwide. <a class="rt-cite" href="#source-11" aria-label="Source 11">[11]</a></span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="rt-tech-section" aria-labelledby="tech-heading">
+        <p class="rt-eyebrow">TWO TECHNOLOGIES</p>
+        <h2 id="tech-heading">AR shows it live. AI paints a picture.</h2>
+        <div class="rt-tech-compare">
+          <article class="rt-tech-card">
+            <h3>AR try-on</h3>
+            <p class="rt-tech-card-summary">Your live camera view, with clothes drawn on top as you move. Used by Snapchat's clothing lenses <a class="rt-cite" href="#source-5" aria-label="Source 5">[5]</a> and Amazon's shoe try-on <a class="rt-cite" href="#source-6" aria-label="Source 6">[6]</a>.</p>
+            <ol class="rt-steps">
+              <li><strong>Camera.</strong> The app or web page opens your phone or laptop camera.</li>
+              <li><strong>Body tracking.</strong> A machine-learning model finds body landmarks (shoulders, elbows, hips, knees) in every frame. Google's free MediaPipe tool does this inside a web page. <a class="rt-cite" href="#source-7" aria-label="Source 7">[7]</a></li>
+              <li><strong>Fitting.</strong> A 3D model of the garment is stretched and moved to match those points, and cloth simulation makes it hang and swing.</li>
+              <li><strong>Drawing.</strong> The garment is redrawn over the video many times a second.</li>
+            </ol>
+            <p class="rt-tech-tradeoff"><strong>Good:</strong> instant and interactive. <strong>Hard:</strong> needs a 3D model of every item, and can look like a sticker.</p>
+          </article>
+          <article class="rt-tech-card">
+            <h3>AI (generative) try-on</h3>
+            <p class="rt-tech-card-summary">A still image of a person wearing the garment, created by an AI model. Used by Google Shopping's "try it on". <a class="rt-cite" href="#source-3" aria-label="Source 3">[3]</a> <a class="rt-cite" href="#source-4" aria-label="Source 4">[4]</a></p>
+            <ol class="rt-steps">
+              <li><strong>Two photos.</strong> One of the person, one of the garment.</li>
+              <li><strong>Understanding the person.</strong> The system estimates their pose and removes the clothes they are wearing from the image.</li>
+              <li><strong>Generating.</strong> A diffusion model, the same kind of AI behind image generators, creates a new photo of the person wearing the garment, keeping patterns and wrinkles. <a class="rt-cite" href="#source-8" aria-label="Source 8">[8]</a></li>
+              <li><strong>Training.</strong> Google's model learned from about 4 million image pairs and now works from a full-length photo or a selfie. <a class="rt-cite" href="#source-4" aria-label="Source 4">[4]</a></li>
+            </ol>
+            <p class="rt-tech-tradeoff"><strong>Good:</strong> very realistic folds and shadows. <strong>Hard:</strong> slower, no live movement, and it shows how a piece looks, not whether it fits. <a class="rt-cite" href="#source-8" aria-label="Source 8">[8]</a></p>
+          </article>
+        </div>
+      </section>
+
+      <section class="rt-tech-section" aria-labelledby="recs-heading">
+        <p class="rt-eyebrow">RECOMMENDATIONS</p>
+        <h2 id="recs-heading">How an AI stylist decides what to show you.</h2>
+        <p class="rt-tech-lead">Recommendation systems suggest pieces you are likely to want. Modern shops pair them with a chat assistant, so you can describe what you want in your own words. <a class="rt-cite" href="#source-9" aria-label="Source 9">[9]</a></p>
+        <div class="rt-tech-compare">
+          <div class="rt-tech-card">
+            <h3>Content-based filtering</h3>
+            <p>Matches the features of each piece (type, size, color, price, style) to what you asked for or liked before.</p>
+            <p class="rt-tech-example">You saved a brown leather jacket, so you see other warm outerwear.</p>
+          </div>
+          <div class="rt-tech-card">
+            <h3>Collaborative filtering</h3>
+            <p>Recommends what shoppers with similar taste liked.</p>
+            <p class="rt-tech-example">People who saved this jacket also saved these jeans.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="rt-tech-section" aria-labelledby="demo-heading">
+        <p class="rt-eyebrow">OUR DEMO</p>
+        <h2 id="demo-heading">What RETHREAD simulates, and what a real version would need.</h2>
+        <p class="rt-tech-lead">This is a class prototype, so nothing on the site uses a camera, uploads a photo, or calls an AI service. Simple JavaScript imitates the experience, and every simulated feature is labeled.</p>
+        <div class="rt-table-wrap" role="region" aria-label="Demo compared with a real version" tabindex="0">
+          <table class="rt-sim-table">
+            <caption class="rt-visually-hidden">What the RETHREAD demo does compared with a real version</caption>
+            <thead>
+              <tr>
+                <th scope="col">Feature</th>
+                <th scope="col">What our demo does</th>
+                <th scope="col">What a real version would need</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Your body</th>
+                <td>Four illustrated sample models in sizes S to XL, with different builds and skin tones.</td>
+                <td>Your camera or photo, with body tracking such as MediaPipe <a class="rt-cite" href="#source-7" aria-label="Source 7">[7]</a>, and clear consent first.</td>
+              </tr>
+              <tr>
+                <th scope="row">The garment</th>
+                <td>An illustrated version of each piece, drawn to the model's shape, with the real listing photo beside it.</td>
+                <td>A 3D model of each piece (AR), or a hosted image model like Google's (AI). <a class="rt-cite" href="#source-3" aria-label="Source 3">[3]</a></td>
+              </tr>
+              <tr>
+                <th scope="row">"Analyzing" steps</th>
+                <td>A short animation showing the stages a real system goes through.</td>
+                <td>Real body detection and garment mapping, taking a fraction of a second (AR) or several seconds (AI).</td>
+              </tr>
+              <tr>
+                <th scope="row">Fit estimate</th>
+                <td>Compares the piece's listed size with the model's usual size.</td>
+                <td>Body measurements and garment measurements, which secondhand listings rarely include.</td>
+              </tr>
+              <tr>
+                <th scope="row">Style assistant</th>
+                <td>Keyword matching: picks out type, size, budget, color and occasion, then ranks the 8 sample pieces.</td>
+                <td>A language model to understand requests, plus recommendations learned from many shoppers.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p><a class="rt-button rt-button-primary" href="virtual-try-on.html">Try the demo</a></p>
+      </section>
+
+      <section class="rt-tech-section" aria-labelledby="care-heading">
+        <p class="rt-eyebrow">DESIGNED WITH CARE</p>
+        <h2 id="care-heading">What a real try-on has to get right.</h2>
+        <ul class="rt-concern-grid">
+          <li>
+            <h3>Privacy</h3>
+            <p>Face and body scans can count as biometric data. Retailers including Amazon have been sued in Illinois over try-on tools that scanned faces without written consent. <a class="rt-cite" href="#source-10" aria-label="Source 10">[10]</a> A real feature must explain what it captures, ask first, and offer a "use a model instead" option.</p>
+          </li>
+          <li>
+            <h3>Honest results</h3>
+            <p>Try-on images are estimates. Shoppers should be told it is a preview, not a promise that something will fit.</p>
+          </li>
+          <li>
+            <h3>Every body</h3>
+            <p>Models should cover many sizes, shapes and skin tones. Google's try-on models range from XXS to 4XL. <a class="rt-cite" href="#source-3" aria-label="Source 3">[3]</a></p>
+          </li>
+          <li>
+            <h3>Accessibility</h3>
+            <p>A camera-only feature leaves people out. Our demo works with a keyboard and screen reader, describes each result in text, and skips animations for people who turn them off.</p>
+          </li>
+          <li>
+            <h3>One-of-a-kind pieces</h3>
+            <p>Every thrift item is unique, so shops can't build a 3D model of each one. Photo-based AI try-on suits secondhand clothing better than 3D AR.</p>
+          </li>
+        </ul>
+      </section>
+
+      <section class="rt-impact" aria-labelledby="impact-heading">
+        <p class="rt-eyebrow">SUSTAINABILITY</p>
+        <h2 id="impact-heading">Fewer wasted trips. More clothes kept in use.</h2>
+        <p>More than half of fast fashion is thrown away within a year. <a class="rt-cite" href="#source-11" aria-label="Source 11">[11]</a> Buying secondhand keeps clothes in use for longer, which is the main goal of a circular fashion economy. Try-on and recommendations help in three ways:</p>
+        <ul class="rt-impact-list">
+          <li><strong>Fewer trips.</strong> Shoppers only travel for pieces that are likely to fit.</li>
+          <li><strong>Fewer returns.</strong> Less shipping back and forth, and fewer items that never get resold.</li>
+          <li><strong>The right buyer, sooner.</strong> One-of-a-kind pieces reach someone who will wear them, instead of sitting unsold.</li>
+        </ul>
+        <p class="rt-impact-action"><a class="rt-button rt-button-secondary" href="index.html#clothes">Browse secondhand clothes</a></p>
+      </section>
+
+      <section class="rt-sources" aria-labelledby="sources-heading">
+        <h2 id="sources-heading">Sources</h2>
+        <ol>
+          <li id="source-1">Narvar, <a href="https://see.narvar.com/rs/249-TEC-877/images/2022%20State%20of%20Returns%20Report%20-%20102822.pdf"><cite>The State of Returns 2022</cite></a>.</li>
+          <li id="source-2">Rithum, <a href="https://www.rithum.com/wp-content/uploads/2025/05/Rithum-2025-Global-Returns-Profit-Impact-Report.pdf"><cite>2025 Global Returns &amp; Profit Impact Report</cite></a>.</li>
+          <li id="source-3">Google, <a href="https://blog.google/products-and-platforms/products/shopping/virtual-try-on-google-generative-ai/">"How AI makes virtual try-on more realistic"</a> (2023).</li>
+          <li id="source-4">Google, <a href="https://blog.google/products-and-platforms/products/shopping/google-shopping-ai-mode-virtual-try-on-update/">"Shop with AI Mode, use AI to buy and try clothes on yourself virtually"</a> (2025).</li>
+          <li id="source-5">Snap, <a href="https://ar.snap.com/blog/ar-virtual-try-on-ecommerce-lens-studio">"Virtual Try-On with Lens Studio"</a>.</li>
+          <li id="source-6">Amazon, <a href="https://press.aboutamazon.com/2022/6/amazon-fashion-introduces-a-more-convenient-way-to-shop-with-virtual-try-on-for-shoes">"Amazon Fashion Introduces Virtual Try-On for Shoes"</a> (2022).</li>
+          <li id="source-7">Google AI Edge, <a href="https://developers.google.com/edge/mediapipe/solutions/vision/pose_landmarker/web_js"><cite>MediaPipe Pose Landmarker guide for Web</cite></a>.</li>
+          <li id="source-8">Zhu et al., <a href="https://tryondiffusion.github.io/">"TryOnDiffusion: A Tale of Two UNets"</a>, CVPR 2023.</li>
+          <li id="source-9">Google for Developers, <a href="https://developers.google.com/machine-learning/recommendation"><cite>Recommendation Systems course</cite></a>.</li>
+          <li id="source-10">ArentFox Schiff, <a href="https://www.afslaw.com/perspectives/alerts/biometric-privacy-class-actions-take-aim-virtual-try-retailers">"Biometric Privacy Class Actions Take Aim at Virtual 'Try-On' Retailers"</a>.</li>
+          <li id="source-11">Ellen MacArthur Foundation, <a href="https://www.ellenmacarthurfoundation.org/fashion-and-the-circular-economy-deep-dive">"Fashion and the circular economy"</a>.</li>
+        </ol>
+      </section>
+    </main>
+
+    <footer class="rt-footer">
+      <div class="rt-container rt-footer-inner">
+        <a class="rt-wordmark" href="index.html">RETHREAD<span aria-hidden="true">.</span></a>
+        <p>Find your next favorite, close to home.</p>
+        <span>Classroom prototype · Sample listings only</span>
+      </div>
+    </footer>
+  </body>
+</html>
