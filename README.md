@@ -1,11 +1,58 @@
-# CSEN 163 Group Project: Secondhand Clothing Platform
+# RETHREAD
 
 A web app for local secondhand clothing stores. Users browse clothes, save favorites, try items on virtually (simulated demo), and book a time to try them on in the store.
 
 - **Emerging tech:** AI/AR virtual try-on. It does not have to be implemented, but it has to be researched, documented, and shown on the site.
 - **Sustainability:** buying secondhand keeps clothes in use and out of landfill. This needs to be visible on the site, not just in the report.
-- **Topic status:** this is our working idea. We can still change it, but the Assignment 3 schedule below only works if we lock it by **Tue Nov 10**.
 
+The pages are plain HTML, CSS and JavaScript, backed by a small PHP API that keeps its data in SQLite.
+
+Created for SCU CSEN 163.
+
+## Requirements
+
+This project requires PHP 8.1 or newer. 
+
+You can check your PHP version by running `php -v`.
+
+To install PHP on a Mac, run `brew install php`. On Windows, use the installer from [windows.php.net](https://windows.php.net/download/) or XAMPP.
+
+## Running the Web App
+
+From the project folder:
+
+```bash
+php -S localhost:8000 router.php
+```
+
+The site is at <http://localhost:8000> and the demo console is at <http://localhost:8000/demo/>. 
+
+The database builds itself on the first request, using the sample stores, pieces, and bookings in `data/`.
+
+## Running the Demo Console
+
+`demo/` is a plain test page for API demonstrations. 
+
+The following demo stores come pre-installed when using the demo console with the default database.
+
+| Store | Auth code |
+|-------|-----------|
+| Second Story Vintage | `SecondStory-demo-2026` |
+| Juniper & Thread | `JuniperThread-demo-2026` |
+| North Loop Archive | `NorthLoop-demo-2026` |
+
+
+## Docs
+
+- [docs/api.md](docs/api.md): REST API documenteion
+- [docs/backend.md](docs/backend.md): Configuration, testing, and development documentation on the PHP backend
+
+## Credits
+Jess (design), Boyang (HTML/CSS), Andrew (JavaScript), Ismael (AI/AR research) and Charlie (PHP API).
+
+---
+
+# Assignment Info
 ## Assignment 3: Heuristic evaluation and improved prototype
 
 **Due Thu Nov 19, 2026 at 10:00am on Camino.** Worth 10% of the course grade.

@@ -1,0 +1,19 @@
+{
+    "models": [
+        {
+            "model_id": "model-01",
+            "label": "Sample model A",
+            "description": "Example model for the try-on demo. Not a real customer.",
+            "image": "assets/images/rust-floral-dress.jpg",
+            "image_alt": "Model wearing a rust-colored floral dress"
+        },
+        {
+            "model_id": "model-02",
+            "label": "Sample model B",
+            "description": "Example model for the try-on demo. Not a real customer.",
+            "image": "assets/images/checked-blazer.jpg",
+            "image_alt": "Model wearing a checked tailored blazer over a white shirt"
+        }
+    ],
+    "results": []
+}

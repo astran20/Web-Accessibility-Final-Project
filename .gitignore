@@ -1,0 +1,9 @@
+.DS_Store
+
+# Built automatically on the first request (or by `php server-reset.php`)
+data/*.db
+data/*.db-journal
+
+# Photos uploaded through the store dashboard
+uploads/items/*
+!uploads/items/.gitkeep

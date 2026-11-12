@@ -1,0 +1,13 @@
+# RETHREAD on Apache: clean API URLs and no access to internal files.
+# (PHP's built-in server ignores this file and uses router.php instead.)
+Options -Indexes
+RewriteEngine On
+
+RewriteRule (^|/)\. - [F,L]
+RewriteRule ^(config\.php|server-reset\.php|router\.php)$ - [F,L]
+RewriteRule ^(data|tests)(/|$) - [F,L]
+RewriteRule ^api/(helpers|database|models)(\.php)?/?$ - [F,L]
+
+# /api/items -> api/items.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^api/([a-z0-9-]+)/?$ api/$1.php [L,QSA]
