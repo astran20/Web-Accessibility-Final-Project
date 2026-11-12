@@ -10,31 +10,38 @@
   <a class="skip-link" href="#admin">Skip to store admin</a>
   <header class="top">
     <h1>RETHREAD demo console</h1>
-    <p>A bare-bones page for demoing the API. The left side is what shoppers see. The right side is a store's admin portal. Change something on the right, then refresh the left.</p>
+    <p id="status" class="status" role="status" aria-live="polite"></p>
   </header>
-
-  <p id="status" class="status" role="status" aria-live="polite"></p>
 
   <main class="columns">
     <section class="panel" aria-labelledby="shop-heading">
       <div class="panel-head">
         <h2 id="shop-heading">Shop view</h2>
-        <button type="button" id="refresh-shop">Refresh catalog</button>
+        <button type="button" class="secondary" id="refresh-shop">Refresh catalog</button>
       </div>
-      <p id="impact" class="muted"></p>
-      <label for="shop-sort">Sort</label>
-      <select id="shop-sort">
-        <option value="featured">Featured</option>
-        <option value="price-low">Price: low to high</option>
-        <option value="price-high">Price: high to low</option>
-        <option value="recent">Recently added</option>
-      </select>
-      <p id="shop-count" class="muted"></p>
+      <div class="shop-tools">
+        <div>
+          <label for="shop-sort">Sort</label>
+          <select id="shop-sort">
+            <option value="featured">Featured</option>
+            <option value="price-low">Price: low to high</option>
+            <option value="price-high">Price: high to low</option>
+            <option value="recent">Recently added</option>
+          </select>
+        </div>
+        <p id="shop-count" class="muted count"></p>
+      </div>
       <ol id="shop-list" class="shop-list"></ol>
     </section>
 
     <section class="panel" id="admin" aria-labelledby="admin-heading">
-      <h2 id="admin-heading">Store admin</h2>
+      <div class="panel-head">
+        <h2 id="admin-heading">Store admin</h2>
+        <div class="signed-in" id="signed-in" hidden>
+          <span id="store-name" class="muted" tabindex="-1"></span>
+          <button type="button" class="secondary" id="sign-out">Sign out</button>
+        </div>
+      </div>
 
       <form id="login-form">
         <fieldset>
@@ -47,23 +54,17 @@
           </select>
           <label for="login-code">Auth code</label>
           <input id="login-code" type="password" autocomplete="off" required aria-describedby="login-hint">
-          <p id="login-hint" class="muted">Demo codes are in the README. <button type="button" class="link" id="fill-code">Fill in the demo code</button></p>
+          <p id="login-hint" class="muted hint">Demo codes are in the README <button type="button" class="link" id="fill-code">Fill in the demo code</button></p>
           <button type="submit">Sign in</button>
         </fieldset>
       </form>
 
       <div id="dashboard" hidden>
-        <div class="panel-head">
-          <h3 id="store-name"></h3>
-          <button type="button" id="sign-out">Sign out</button>
-        </div>
-        <p id="summary" class="muted"></p>
-
         <h3>Inventory</h3>
         <div class="table-wrap">
           <table>
             <caption class="visually-hidden">Your listings and their status</caption>
-            <thead><tr><th scope="col">Piece</th><th scope="col">Price</th><th scope="col">Status</th><th scope="col">Pinned</th></tr></thead>
+            <thead><tr><th scope="col">Piece</th><th scope="col" class="num">Price</th><th scope="col">Status</th><th scope="col">Featured</th></tr></thead>
             <tbody id="inventory"></tbody>
           </table>
         </div>
@@ -76,7 +77,7 @@
             <tbody id="bookings"></tbody>
           </table>
         </div>
-        <p id="no-bookings" class="muted" hidden>No upcoming bookings.</p>
+        <p id="no-bookings" class="muted" hidden>No upcoming bookings</p>
 
         <form id="item-form" novalidate>
           <fieldset>
@@ -96,11 +97,11 @@
                 <p class="error" data-error="condition"></p></div>
             </div>
             <div class="row">
-              <div class="field"><label for="f-price">Price (dollars)</label><input id="f-price" name="price" type="number" min="1" step="1" required><p class="error" data-error="price_cents"></p></div>
+              <div class="field"><label for="f-price">Price in dollars</label><input id="f-price" name="price" type="number" min="1" step="1" required><p class="error" data-error="price_cents"></p></div>
               <div class="field"><label for="f-material">Material (optional)</label><input id="f-material" name="material"><p class="error" data-error="material"></p></div>
             </div>
             <div class="field"><label for="f-description">Description</label><textarea id="f-description" name="description" rows="3" required></textarea><p class="error" data-error="description"></p></div>
-            <div class="field"><label for="f-photo">Photo (JPG, PNG or WEBP, up to 5 MB)</label><input id="f-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required><p class="error" data-error="image_b64"></p></div>
+            <div class="field"><label for="f-photo">Photo, JPG, PNG or WEBP up to 5 MB</label><input id="f-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required><p class="error" data-error="image_b64"></p></div>
             <div class="field"><label for="f-alt">Photo description for screen readers</label><input id="f-alt" name="image_alt" required placeholder="Camel wool coat on a wooden hanger"><p class="error" data-error="image_alt"></p></div>
             <div class="field check"><input id="f-tryon" name="try_on_supported" type="checkbox"><label for="f-tryon">Include in the try-on demo</label></div>
             <button type="submit">Add listing</button>

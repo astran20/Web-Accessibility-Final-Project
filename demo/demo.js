@@ -13,11 +13,14 @@ let store = null; // { id, code, name } once signed in
 const $ = (sel) => document.querySelector(sel);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
+// "2026-11-13" -> "Fri, Nov 13"
+const shortDate = (iso) => new Date(iso + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 const img = (path) => (/^(https?:|data:)/.test(path) ? path : "../" + path);
 
 function say(message, isError = false) {
   const el = $("#status");
-  el.textContent = message;
+  // A single sentence reads as a label, so it drops its final period
+  el.textContent = /^[^.]*\.$/.test(message) ? message.slice(0, -1) : message;
   el.classList.toggle("is-error", isError);
 }
 
@@ -47,21 +50,15 @@ async function call(endpoint, { method = "GET", body = null, query = null, auth 
 
 async function loadShop() {
   try {
-    const [catalog, impact] = await Promise.all([
-      call("items", { query: { sort: $("#shop-sort").value } }),
-      call("impact"),
-    ]);
+    const catalog = await call("items", { query: { sort: $("#shop-sort").value } });
     $("#shop-count").textContent = `${plural(catalog.count, "piece")} listed`;
-    $("#impact").textContent = `${plural(impact.pieces_rehomed, "piece")} rehomed so far, about ${impact.estimated_co2_kg_saved} kg of CO2 saved (estimate).`;
     $("#shop-list").innerHTML = catalog.items.map((item) => `
       <li>
         <img src="${esc(img(item.image))}" alt="${esc(item.image_alt)}">
         <div>
-          <strong>${esc(item.title)}</strong>
-          ${item.pinned ? '<span class="tag">Pinned</span>' : ""}
-          ${item.status !== "available" ? `<span class="tag ${esc(item.status)}">${esc(item.status_label)}</span>` : ""}
-          <div>${esc(item.price_display)} · Size ${esc(item.size)} · ${esc(item.condition)}</div>
-          <div class="muted">${esc(item.store.name)}</div>
+          <strong>${esc(item.title)}</strong>${item.pinned ? '<span class="flag">Pinned</span>' : ""}${item.status !== "available" ? `<span class="flag ${esc(item.status)}">${esc(item.status_label)}</span>` : ""}
+          <div class="meta">${esc(item.price_display)} · Size ${esc(item.size)} · ${esc(item.condition)}</div>
+          <div class="meta muted">${esc(item.store.name)}</div>
         </div>
       </li>`).join("");
   } catch (err) {
@@ -72,18 +69,15 @@ async function loadShop() {
 // ---------- Store admin ----------
 
 async function loadDashboard() {
-  const [summary, inventory, bookings] = await Promise.all([
-    call("store-summary", { auth: true }),
+  const [inventory, bookings] = await Promise.all([
     call("store-items", { auth: true }),
     call("store-bookings", { auth: true }),
   ]);
-  const l = summary.listings;
-  $("#summary").textContent = `${l.available} available, ${l.held} on hold, ${l.sold} sold. ${plural(summary.upcoming_bookings, "upcoming booking")}. ${summary.pinned_count} of ${summary.pinned_limit} pins used.`;
 
   $("#inventory").innerHTML = inventory.items.map((item) => `
     <tr>
-      <td><strong>${esc(item.title)}</strong><br><span class="muted">${esc(item.item_id)} · ${esc(item.size)} · ${item.favorites_count} saves</span></td>
-      <td>${esc(item.price_display)}</td>
+      <td><strong>${esc(item.title)}</strong><div class="sub">${esc(item.item_id)} · Size ${esc(item.size)} · ${plural(item.favorites_count, "save")}</div></td>
+      <td class="num">${esc(item.price_display)}</td>
       <td>
         <label class="visually-hidden" for="status-${esc(item.item_id)}">Status for ${esc(item.title)}</label>
         <select id="status-${esc(item.item_id)}" data-status="${esc(item.item_id)}">
@@ -97,15 +91,15 @@ async function loadDashboard() {
   $("#no-bookings").hidden = bookings.count > 0;
   $("#bookings").innerHTML = bookings.bookings.map((b) => `
     <tr>
-      <td>${esc(b.date_label)}<br>${esc(b.time_label)}</td>
-      <td>${esc(b.name)}<br><span class="muted">${esc(b.email)}</span></td>
+      <td class="nowrap">${esc(shortDate(b.date))}<div class="sub">${esc(b.time_label)}</div></td>
+      <td>${esc(b.name)}<div class="sub">${esc(b.email)}</div></td>
       <td>${esc(b.item.title)}</td>
-      <td>${esc(b.status_label)}${b.cancel_message ? `<br><span class="muted">${esc(b.cancel_message)}</span>` : ""}</td>
-      <td>${b.status === "confirmed" ? `
-        <button type="button" data-booking="${b.booking_id}" data-action="completed">Completed</button>
-        <button type="button" data-booking="${b.booking_id}" data-action="sold">Completed and sold</button>
+      <td>${esc(b.status_label)}${b.cancel_message ? `<div class="sub">${esc(b.cancel_message)}</div>` : ""}</td>
+      <td>${b.status === "confirmed" ? `<div class="actions">
+        <button type="button" class="secondary" data-booking="${b.booking_id}" data-action="completed">Completed</button>
+        <button type="button" class="secondary" data-booking="${b.booking_id}" data-action="sold">Completed and sold</button>
         <button type="button" class="secondary" data-booking="${b.booking_id}" data-action="no_show">No-show</button>
-        <button type="button" class="secondary" data-booking="${b.booking_id}" data-action="cancelled">Cancel</button>` : ""}
+        <button type="button" class="secondary" data-booking="${b.booking_id}" data-action="cancelled">Cancel</button></div>` : ""}
       </td>
     </tr>`).join("");
 }
@@ -129,9 +123,9 @@ $("#login-form").addEventListener("submit", async (e) => {
     $("#store-name").textContent = data.store.name;
     $("#login-form").hidden = true;
     $("#dashboard").hidden = false;
+    $("#signed-in").hidden = false;
     await loadDashboard();
     say(data.message);
-    $("#store-name").setAttribute("tabindex", "-1");
     $("#store-name").focus();
   } catch (err) {
     store = null;
@@ -142,10 +136,11 @@ $("#login-form").addEventListener("submit", async (e) => {
 $("#sign-out").addEventListener("click", () => {
   store = null;
   $("#dashboard").hidden = true;
+  $("#signed-in").hidden = true;
   $("#login-form").hidden = false;
   $("#login-code").value = "";
   $("#login-code").focus();
-  say("Signed out.");
+  say("Signed out");
 });
 
 $("#inventory").addEventListener("change", async (e) => {
