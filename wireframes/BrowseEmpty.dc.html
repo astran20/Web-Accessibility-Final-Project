@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Browse with no matching results</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<style>
+body{margin:0}
+a{color:#222}a:hover{color:#000}
+</style>
+</helmet>
+<div style="min-height: 820px; box-sizing: border-box; background: #ffffff; color: #222222; font-family: Inter, system-ui, sans-serif; font-size: 15px; line-height: 1.4">
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding: 16px 32px; border-bottom: 2px solid #222222">
+<a href="Main.dc.html" style="font-weight: 700; font-size: 18px; border: 2px solid #222222; padding: 8px 12px; text-decoration: none">[APP NAME]</a>
+<nav aria-label="Main" style="display: flex; flex-wrap: wrap; gap: 4px 20px; flex-grow: 1">
+<a href="Main.dc.html" style="padding: 12px 4px; font-weight: 700">Browse</a>
+<a href="Favorites.dc.html" style="padding: 12px 4px">Favorites</a>
+<a href="TryOn.dc.html" style="padding: 12px 4px">Virtual try-on</a>
+<a href="Appointments.dc.html" style="padding: 12px 4px">Appointments</a>
+<a href="Tech.dc.html" style="padding: 12px 4px">How it works</a>
+</nav>
+</header>
+<div style="max-width: 1280px; margin: 0 auto; padding: 32px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 32px">
+<aside aria-label="Filters" style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 24px; border: 2px solid #222222; padding: 20px; box-sizing: border-box; align-self: flex-start">
+<h2 style="margin: 0; font-size: 18px">Filters</h2>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="e-cat" style="font-weight: 600">Category</label>
+<select id="e-cat" style="height: 44px; border: 2px solid #222222; background: #ffffff; font: inherit; padding: 0 8px">
+<option>Dresses</option>
+<option>All categories</option>
+</select>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-weight: 600">Size</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button type="button" aria-pressed="true" style="min-width: 44px; height: 44px; border: 2px solid #222222; background: #222222; font: inherit; color: #ffffff">XS</button>
+<button type="button" style="min-width: 44px; height: 44px; border: 2px solid #222222; background: #ffffff; font: inherit; color: #222222">S</button>
+<button type="button" style="min-width: 44px; height: 44px; border: 2px solid #222222; background: #ffffff; font: inherit; color: #222222">M</button>
+<button type="button" style="min-width: 44px; height: 44px; border: 2px solid #222222; background: #ffffff; font: inherit; color: #222222">L</button>
+<button type="button" style="min-width: 44px; height: 44px; border: 2px solid #222222; background: #ffffff; font: inherit; color: #222222">XL</button>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-weight: 600">Price</span>
+<div style="display: flex; gap: 8px; align-items: center">
+<label for="e-min" style="position: absolute; left: -9999px">Minimum price</label>
+<input id="e-min" type="text" placeholder="Min $" style="width: 0; flex: 1 1 0; height: 44px; border: 2px solid #222222; font: inherit; padding: 0 8px; box-sizing: border-box">
+<span>to</span>
+<label for="e-max" style="position: absolute; left: -9999px">Maximum price</label>
+<input id="e-max" type="text" value="$5" style="width: 0; flex: 1 1 0; height: 44px; border: 2px solid #222222; font: inherit; padding: 0 8px; box-sizing: border-box">
+</div>
+</div>
+<a href="Main.dc.html" style="display: block; text-align: center; padding: 11px 12px; border: 2px solid #222222; text-decoration: none">Clear filters</a>
+</aside>
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 28px">Browse clothes</h1>
+<span aria-live="polite" style="font-weight: 600">0 results</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+<span>Active filters:</span>
+<button type="button" style="height: 44px; padding: 0 12px; border: 2px solid #222222; background: #ffffff; font: inherit; color: #222222">Dresses ✕</button>
+<button type="button" style="height: 44px; padding: 0 12px; border: 2px solid #222222; background: #ffffff; font: inherit; color: #222222">Size XS ✕</button>
+<button type="button" style="height: 44px; padding: 0 12px; border: 2px solid #222222; background: #ffffff; font: inherit; color: #222222">Under $5 ✕</button>
+</div>
+<div style="border: 2px dashed #222222; padding: 56px 24px; display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center">
+<div style="width: 96px; height: 96px; background: #e4e4e4; border: 2px solid #222222; display: flex; align-items: center; justify-content: center; color: #444444">icon</div>
+<h2 style="margin: 0; font-size: 22px">No clothes match these filters</h2>
+<p style="margin: 0; max-width: 420px">Try removing a filter or widening the price range.</p>
+<a href="Main.dc.html" style="padding: 12px 24px; border: 2px solid #222222; background: #222222; color: #ffffff; text-decoration: none">Clear all filters</a>
+</div>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":820}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

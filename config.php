@@ -58,7 +58,7 @@ define("MAX_IMAGE_BYTES", 5 * 1024 * 1024);
 define("MAX_PINNED_PER_STORE", 2);
 
 // ---------- Featured ordering ----------
-// See "Featured ordering" in api/api.md for how these combine.
+// See "Featured ordering" in docs/api.md for how these combine.
 
 define("FEATURED_WEIGHTS", [
     "pinned"                  => 100, // store pinned the item

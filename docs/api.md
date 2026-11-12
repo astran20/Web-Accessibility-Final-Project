@@ -1,6 +1,6 @@
 # RETHREAD API Documentation
 
-The RETHREAD back end is a small PHP + SQLite JSON API. Every endpoint lives at `/api/<name>` (the `.php` suffix is optional). Requests and responses are JSON. All responses are sent with `Cache-Control: no-store`, so refreshing a page always shows the current catalog.
+The RETHREAD back end is a small PHP + SQLite API that speaks JSON. Each endpoint lives at `/api/<name>` (adding `.php` also works). Nothing is cached (`Cache-Control: no-store`), so a page refresh always shows the current catalog. To try the endpoints by hand, use the demo console at `/demo/`.
 
 **Contents**
 
@@ -32,15 +32,15 @@ There are no user accounts. Three kinds of credentials cover everything:
 |-----|-----|----------|
 | **Visitor** (any shopper) | `X-Visitor-Token` header. Get one from `POST /api/create-visitor` and keep it in `localStorage`. | Favorites, My Appointments, and optionally viewing or cancelling bookings made with that token. |
 | **Booking holder** | The `confirmation_code` returned by `create-booking` (for example `RT-7K2Q9M`). Works like a password for that one booking. Not case-sensitive. | Viewing, rescheduling or cancelling one booking, even from another device. |
-| **Store** | `X-Store-Id` and `X-Auth-Code` headers on **every** store request. Auth codes are stored hashed. | Everything under [Store endpoints](#store-endpoints). |
+| **Store** | `X-Store-Id` and `X-Auth-Code` headers on every store request. Auth codes are stored hashed. | Everything under [Store endpoints](#store-endpoints). |
 
-Headers are used for visitor and store credentials (rather than a body object as in Corkboard) because `GET` requests can't carry a body.
+Visitor and store credentials go in headers because `GET` requests can't carry a body.
 
 ## Objects
 
 ### Errors
 
-Every failed request returns an `errors` array. When the error belongs to a form field, `field` names it, so the front end can find the matching `[data-field-error]`, set `aria-invalid="true"` on the control, and announce the message in the live region. Messages are written to be shown on the page as-is. Validation reports **every** invalid field at once, not just the first one.
+A failed request returns an `errors` array. If an error belongs to a form field, `field` names it, so the page can show the message under that field, set `aria-invalid="true"` on the control and announce it in the live region. Messages are written for shoppers and can go on the page unchanged. Validation reports all the invalid fields at once.
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -265,7 +265,7 @@ A day, or part of a day, when a store isn't taking try-ons.
 
 ## Featured ordering
 
-`sort=featured` (the default, and the "Featured" option in the Explore dropdown) ranks pieces with a weighted score. All weights live in `FEATURED_WEIGHTS` in `config.php`.
+`sort=featured` is the default and matches the "Featured" option in the Explore dropdown. Each piece gets a score from the signals below; the weights are in `FEATURED_WEIGHTS` in `config.php`.
 
 | Signal | Points | Why |
 |--------|--------|-----|
@@ -278,9 +278,9 @@ A day, or part of a day, when a store isn't taking try-ons.
 
 After scoring:
 
-1. **Pinned pieces come first**, highest score first.
-2. **Everything else is interleaved round-robin by store.** Each round takes the best remaining piece from every store, then orders that round by score. The first row of Explore therefore mixes shops instead of showing one store's whole rack, which supports the goal of spreading attention across local shops.
-3. Ties break by `item_id`, so the order is stable between refreshes.
+1. Pinned pieces come first, highest score first.
+2. The rest take turns by store. Each round takes the best remaining piece from every store and sorts that round by score, so the first row of Explore mixes shops instead of showing one store's whole rack.
+3. Ties go by `item_id`, so the order doesn't shuffle between refreshes.
 
 Add `explain=1` to see each piece's breakdown:
 
@@ -302,7 +302,7 @@ Add `explain=1` to see each piece's breakdown:
 
 ## GET /api/items
 
-Lists the catalog. Every filter is optional and they combine with AND. By default only `available` and `held` pieces are returned, so a piece that sold disappears on the next refresh.
+Lists the catalog. All filters are optional and can be combined. Only `available` and `held` pieces come back by default, so a piece that sold is gone on the next refresh.
 
 **Query parameters**
 
@@ -352,7 +352,7 @@ One piece, with its full Store Object. Sold pieces are returned with `status: "s
 
 ## GET /api/filter-options
 
-Everything the Explore dropdowns need, with how many listed pieces match each option, so the front end doesn't have to hardcode them.
+The options for each Explore dropdown, with how many listed pieces match each one.
 
 **Response**
 
@@ -398,7 +398,7 @@ One store with its listed pieces (`items`) and upcoming closures (`closures`).
 
 ## POST /api/create-visitor
 
-Creates a guest visitor and returns its token. Call it once, keep the token in `localStorage`, and send it as `X-Visitor-Token` from then on. No personal data is collected.
+Creates a guest visitor and returns its token. Call it once, keep the token in `localStorage`, and send it as `X-Visitor-Token` after that. It doesn't ask for any personal details.
 
 **Response (201)**
 
@@ -508,7 +508,7 @@ When the store is closed that day, `closed` is `true`, `closed_reason` explains 
 
 ## POST /api/create-booking
 
-Books an in-store try-on. The field names match the booking form's `data-field` names. Returns a confirmation code: show it on the confirmation page, because it's what lets the shopper change or cancel the booking later. The slot check and the insert happen inside one locked transaction, so two shoppers can't take the last place at the same moment.
+Books an in-store try-on. The field names match the booking form's `data-field` names. Show the returned confirmation code on the confirmation page, since the shopper needs it to change or cancel later. The slot check and the insert run in one locked transaction, so two shoppers can't grab the last spot at the same moment.
 
 **Headers (optional):** `X-Visitor-Token` links the booking to the visitor so it appears in My Appointments.
 
@@ -717,7 +717,7 @@ The result for a model and a piece. If a composite image has been made for that 
 
 ## GET /api/impact
 
-Live sustainability numbers for the Home and Learn pages. Every sold piece counts as one garment kept in use. CO₂ and water use the rough per-category estimates in `IMPACT_ESTIMATES` (`config.php`) and are clearly marked as estimates.
+Sustainability numbers for the Home and Learn pages, recalculated on every request. Each sold piece counts as one garment kept in use. The CO₂ and water figures come from rough per-category estimates in `IMPACT_ESTIMATES` (`config.php`), and the response flags them as estimates.
 
 **Response**
 
@@ -748,7 +748,7 @@ Missing headers return `401 STORE_AUTH_REQUIRED` and wrong credentials return `4
 
 ## POST /api/store-login
 
-Checks the credentials and returns the store's profile, so the dashboard can open. Nothing is stored on the server; keep the two header values in memory (or `sessionStorage`) and send them with every store request.
+Checks the credentials and returns the store's profile. The server doesn't keep a session, so hold on to the two header values and send them with every store request.
 
 **Response**
 
@@ -975,7 +975,7 @@ The store's try-on appointments, including the shoppers' contact details.
 
 ## PUT /api/update-booking-status
 
-Records what happened with an appointment. `completed` with `"item_sold": true` also marks the piece sold (with all the side effects of `update-item-status`), so the visit and the sale are recorded in one step. `cancelled` sets `cancel_reason: "STORE_CANCELLED"`. A cancelled booking can't be set back to `confirmed`, since its slot may have been given away.
+Records how an appointment went. `completed` with `"item_sold": true` also marks the piece sold, with the same side effects as `update-item-status`, so the visit and the sale go in together. `cancelled` sets `cancel_reason: "STORE_CANCELLED"`. A cancelled booking can't be set back to `confirmed`, since its slot may have been given away.
 
 **Request Body**
 
@@ -1057,7 +1057,7 @@ The store's upcoming closures.
 
 ## POST /api/create-closure
 
-Blocks off a whole day (leave out the times) or part of one. Those slots show as `CLOSED` in availability. Existing bookings in the window are **not** cancelled automatically; they're returned in `conflicting_bookings` so the store can contact those shoppers.
+Blocks off a whole day (leave out the times) or part of one. Those slots show as `CLOSED` in availability. Bookings already in that window stay booked. They come back in `conflicting_bookings` so the store can contact those shoppers.
 
 **Request Body**
 

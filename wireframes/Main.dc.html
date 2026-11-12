@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Browse and filter clothes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<style>
+body{margin:0}
+a{color:#222}a:hover{color:#000}
+</style>
+</helmet>
+<div style="min-height: 1240px; box-sizing: border-box; background: #ffffff; color: #222222; font-family: Inter, system-ui, sans-serif; font-size: 15px; line-height: 1.4">
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding: 16px 32px; border-bottom: 2px solid #222222">
+<a href="Main.dc.html" style="font-weight: 700; font-size: 18px; border: 2px solid #222222; padding: 8px 12px; text-decoration: none">[APP NAME]</a>
+<nav aria-label="Main" style="display: flex; flex-wrap: wrap; gap: 4px 20px; flex-grow: 1">
+<a href="Main.dc.html" style="padding: 12px 4px; font-weight: 700">Browse</a>
+<a href="Favorites.dc.html" style="padding: 12px 4px">Favorites</a>
+<a href="TryOn.dc.html" style="padding: 12px 4px">Virtual try-on</a>
+<a href="Appointments.dc.html" style="padding: 12px 4px">Appointments</a>
+<a href="Tech.dc.html" style="padding: 12px 4px">How it works</a>
+</nav>
+</header>
+<div style="padding: 10px 32px; background: #e4e4e4; border-bottom: 2px solid #222222; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center">
+<span>Sustainability strip: [IMPACT MESSAGE, e.g. what buying secondhand saves]</span>
+<a href="Tech.dc.html">Learn more</a>
+</div>
+<div style="max-width: 1280px; margin: 0 auto; padding: 32px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 32px">
+<aside aria-label="Filters" style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 24px; border: 2px solid #222222; padding: 20px; box-sizing: border-box; align-self: flex-start">
+<h2 style="margin: 0; font-size: 18px">Filters</h2>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="f-cat" style="font-weight: 600">Category</label>
+<select id="f-cat" style="height: 44px; border: 2px solid #222222; background: #ffffff; font: inherit; padding: 0 8px">
+<option>All categories</option>
+<option>Tops</option>
+<option>Bottoms</option>
+<option>Outerwear</option>
+<option>Dresses</option>
+</select>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-weight: 600">Size</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button type="button" style="min-width: 44px; height: 44px; border: 2px solid #222222; background: #ffffff; font: inherit; color: #222222">XS</button>
+<button type="button" style="min-width: 44px; height: 44px; border: 2px solid #222222; background: #ffffff; font: inherit; color: #222222">S</button>
+<button type="button" aria-pressed="true" style="min-width: 44px; height: 44px; border: 2px solid #222222; background: #222222; font: inherit; color: #ffffff">M</button>
+<button type="button" style="min-width: 44px; height: 44px; border: 2px solid #222222; background: #ffffff; font: inherit; color: #222222">L</button>
+<button type="button" style="min-width: 44px; height: 44px; border: 2px solid #222222; background: #ffffff; font: inherit; color: #222222">XL</button>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-weight: 600">Price</span>
+<div style="display: flex; gap: 8px; align-items: center">
+<label for="f-min" style="position: absolute; left: -9999px">Minimum price</label>
+<input id="f-min" type="text" placeholder="Min $" style="width: 0; flex: 1 1 0; height: 44px; border: 2px solid #222222; font: inherit; padding: 0 8px; box-sizing: border-box">
+<span>to</span>
+<label for="f-max" style="position: absolute; left: -9999px">Maximum price</label>
+<input id="f-max" type="text" placeholder="Max $" style="width: 0; flex: 1 1 0; height: 44px; border: 2px solid #222222; font: inherit; padding: 0 8px; box-sizing: border-box">
+</div>
+</div>
+<a href="BrowseEmpty.dc.html" style="display: block; text-align: center; padding: 11px 12px; border: 2px dashed #222222; text-decoration: none">Clear filters</a>
+</aside>
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 28px">Browse clothes</h1>
+<span aria-live="polite" style="font-weight: 600">8 results · Size M</span>
+</div>
+<div style="display: flex; align-items: center; gap: 8px">
+<label for="f-sort">Sort by</label>
+<select id="f-sort" style="height: 44px; border: 2px solid #222222; background: #ffffff; font: inherit; padding: 0 8px">
+<option>Newest</option>
+<option>Price, low to high</option>
+<option>Price, high to low</option>
+</select>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 20px">
+<sc-for list="{{items}}" as="item" hint-placeholder-count="8">
+<article style="border: 2px solid #222222; display: flex; flex-direction: column">
+<div style="position: relative; height: 190px; background: #e4e4e4; border-bottom: 2px solid #222222; display: flex; align-items: center; justify-content: center">
+<span style="color: #444444">item photo</span>
+<button type="button" onClick="{{item.toggle}}" aria-label="{{item.heartLabel}}" aria-pressed="{{item.saved}}" style="position: absolute; top: 8px; right: 8px; width: 44px; height: 44px; border: 2px solid #222222; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="{{item.heartFill}}" stroke="#222222" stroke-width="2" stroke-linejoin="round"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"></path></svg>
+</button>
+</div>
+<div style="padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-weight: 700">{{item.name}}</span>
+<span style="color: #444444">{{item.store}}</span>
+<span>Size {{item.size}} · $[PRICE]</span>
+<div style="display: flex; gap: 8px; margin-top: 6px">
+<a href="TryOn.dc.html" style="flex: 1 1 0; text-align: center; padding: 11px 4px; border: 2px solid #222222; text-decoration: none">Try on</a>
+<a href="Booking.dc.html" style="flex: 1 1 0; text-align: center; padding: 11px 4px; border: 2px solid #222222; background: #222222; color: #ffffff; text-decoration: none">Book</a>
+</div>
+</div>
+</article>
+</sc-for>
+</div>
+<div style="display: flex; justify-content: flex-end">
+<div style="width: 240px; max-width: 100%; border: 2px dashed #222222; padding: 16px; box-sizing: border-box; text-align: center">Chat box sits here (bottom right, floating) if we add one</div>
+</div>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1240}}'>
+class Component extends DCLogic {
+renderVals() {
+const saved = (this.state && this.state.saved) || { 2: true };
+const base = [
+{ id: 1, name: 'Denim jacket', store: '[STORE A]', size: 'M' },
+{ id: 2, name: 'Wool sweater', store: '[STORE B]', size: 'M' },
+{ id: 3, name: 'Corduroy pants', store: '[STORE A]', size: 'M' },
+{ id: 4, name: 'Flannel shirt', store: '[STORE C]', size: 'M' },
+{ id: 5, name: 'Trench coat', store: '[STORE B]', size: 'M' },
+{ id: 6, name: 'Midi dress', store: '[STORE C]', size: 'M' },
+{ id: 7, name: 'Graphic tee', store: '[STORE A]', size: 'M' },
+{ id: 8, name: 'Pleated skirt', store: '[STORE B]', size: 'M' }
+];
+const items = base.map((x) => {
+const on = !!saved[x.id];
+return Object.assign({}, x, {
+saved: on ? 'true' : 'false',
+heartFill: on ? '#222222' : 'none',
+heartLabel: on ? 'Remove ' + x.name + ' from favorites' : 'Save ' + x.name + ' to favorites',
+toggle: () => { const next = Object.assign({}, saved); next[x.id] = !on; this.setState({ saved: next }); }
+});
+});
+return { items: items };
+}
+}
+</script>
+</body>
+</html>

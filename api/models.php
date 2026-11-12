@@ -1,7 +1,7 @@
 <?php
 /*
  models.php
- Turns database rows into the JSON objects described in api.md, and holds the shared
+ Turns database rows into the JSON objects described in docs/api.md, and holds the shared
  business logic: featured ordering, time slot availability, inventory status changes,
  listing validation, photo uploads and the impact stat.
 
@@ -230,7 +230,7 @@ function visitorFavoriteIds(PDO $db, ?string $visitorToken): ?array {
 
 // ---------- Featured ordering ----------
 
-// DESC: Scores every item for the "Featured" sort. See "Featured ordering" in api.md.
+// DESC: Scores every item for the "Featured" sort. See "Featured ordering" in docs/api.md.
 // RET: Map of item_id => score breakdown
 function scoreItems(PDO $db, array $rows, ?string $visitorToken): array {
     $w = FEATURED_WEIGHTS;
