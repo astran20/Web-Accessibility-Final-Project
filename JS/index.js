@@ -2,9 +2,10 @@
     JavaScript File for index.html
 */
 
+
 const productList = document.getElementsByClassName('rt-product-card');
 const productInfo = document.getElementsByClassName('rt-product-info');
-console.log(productInfo);
+
 /*
     1. Filter clothes. Filter by size, category, and price. The list updates and shows the number of results. If nothing matches, users can clear the filters.
 */
@@ -41,15 +42,11 @@ filterPanel.addEventListener('change', () => {
         if(pricesFilter.value != ''){
             const min = pricesFilter.value.split('-')[0];
             const max = pricesFilter.value.split('-')[1];
-            console.log(`min: ${min} max: ${max}`)
+
             priceFilter = filterPrices(min, max);
         }
         
-        console.log("searchFilter:", searchFilter);
-        console.log("storeFilter:", storeFilter);
-        console.log("categoryFilter: ", categoryFilter);
-        console.log("sizeFilter:", sizeFilter);
-        console.log("priceFilter:", priceFilter);
+
         
         updateFilters(searchFilter, storeFilter, categoryFilter, sizeFilter, priceFilter);
 });
@@ -185,45 +182,39 @@ sortItems.addEventListener('change', () => {
             return product;
         }
     }).filter(product => product !== undefined);
+    const sortedVisibleProducts = []
     if(value == "featured"){
-        const sortedVisibleProducts = Array.from(visibleProducts).sort((a,b) => {
+        sortedVisibleProducts = Array.from(visibleProducts).sort((a,b) => {
             const aId = Number(a.getAttribute(
             'data-item-id').split('item-')[1]);
             const bId = Number(b.getAttribute(
             'data-item-id').split('item-')[1]);
 
             return aId - bId;
-        })
-
-        grid.append(...sortedVisibleProducts);
+        });
     }
     else if(value == "price-low"){
-        const sortedVisibleProducts = Array.from(visibleProducts).sort((a,b) => {
+        sortedVisibleProducts = Array.from(visibleProducts).sort((a,b) => {
             const aPrice = Number(a.getAttribute(
             'data-price'));
             const bPrice = Number(b.getAttribute(
             'data-price'));
 
             return aPrice - bPrice;
-        })
-
-        grid.append(...sortedVisibleProducts);
+        });
     }
     else if(value == "price-high"){
-        const sortedVisibleProducts = Array.from(visibleProducts).sort((a,b) => {
+        sortedVisibleProducts = Array.from(visibleProducts).sort((a,b) => {
             const aPrice = Number(a.getAttribute(
             'data-price'));
             const bPrice = Number(b.getAttribute(
             'data-price'));
 
             return bPrice - aPrice;
-        })
-
-        grid.append(...sortedVisibleProducts);
+        });
     }
     else if(value == "recent"){
-        const sortedVisibleProducts = Array.from(visibleProducts).sort((a,b) => {
-            console.log(a.getAttribute('data-item-id'));
+        sortedVisibleProducts = Array.from(visibleProducts).sort((a,b) => {
             const aId = Number(a.getAttribute(
             'data-item-id').split('item-')[1]);
 
@@ -231,7 +222,20 @@ sortItems.addEventListener('change', () => {
             'data-item-id').split('item-')[1]);
             
             return bId - aId;
-        })
-        grid.append(...sortedVisibleProducts);
+        });
     }
+
+    grid.append(...sortedVisibleProducts);
+});
+
+
+
+/*
+    2. Save favorites. Clicking the heart changes it to show the item is saved, and the item appears on the Favorites page. Clicking again removes it.
+*/
+const favoriteButtons = document.getElementsByClassName('rt-favorite-button');
+Array.from(favoriteButtons).forEach(button => {
+    button.addEventListener('click', () => {
+        button.classList.toggle('is-saved');
+    });
 });
