@@ -532,6 +532,9 @@
 
     var modelList = root.querySelector("[data-tryon-models]");
     var itemList = root.querySelector("[data-tryon-items]");
+    var filterButtons = root.querySelectorAll("[data-tryon-filter] button");
+    var emptyNote = root.querySelector("[data-tryon-empty]");
+    var showAllButton = root.querySelector("[data-tryon-show-all]");
     var stage = root.querySelector("[data-tryon-stage]");
     var progress = root.querySelector("[data-tryon-progress]");
     var status = root.querySelector("[data-tryon-status]");
@@ -554,7 +557,8 @@
       model: find(MODELS, params.get("model")) || MODELS[1],
       item: find(ITEMS, params.get("item")) || ITEMS[0],
       pinned: null,
-      timer: null
+      timer: null,
+      filter: "all"
     };
     var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -570,8 +574,20 @@
     });
 
     function renderItems() {
+      var saved = readFavorites();
+      var showing = state.filter === "favorites"
+        ? ITEMS.filter(function (item) { return saved.indexOf(item.id) !== -1; })
+        : ITEMS;
+      var savedCount = ITEMS.filter(function (item) { return saved.indexOf(item.id) !== -1; }).length;
+      filterButtons.forEach(function (button) {
+        var name = button.getAttribute("data-filter");
+        button.setAttribute("aria-pressed", String(name === state.filter));
+        if (name === "favorites") button.textContent = "Favorites (" + savedCount + ")";
+      });
+      itemList.hidden = showing.length === 0;
+      emptyNote.hidden = showing.length !== 0;
       itemList.replaceChildren();
-      ITEMS.forEach(function (item) {
+      showing.forEach(function (item) {
         var label = document.createElement("label");
         label.className = "rt-choice rt-choice-item";
         var input = document.createElement("input");
@@ -590,8 +606,28 @@
         label.append(input, img, name, meta);
         itemList.appendChild(label);
       });
+      if (state.item) syncChoices();
     }
     renderItems();
+
+    function setFilter(name, announce) {
+      state.filter = name;
+      renderItems();
+      if (!announce) return;
+      var count = itemList.children.length;
+      status.textContent = name === "favorites"
+        ? (count ? "Showing your " + count + " saved " + (count === 1 ? "piece." : "pieces.") : "You haven't saved any pieces yet.")
+        : "Showing all " + count + " pieces.";
+    }
+
+    filterButtons.forEach(function (button) {
+      button.addEventListener("click", function () { setFilter(button.getAttribute("data-filter"), true); });
+    });
+
+    showAllButton.addEventListener("click", function () {
+      setFilter("all", true);
+      root.querySelector('[data-filter="all"]').focus();
+    });
 
     function syncChoices() {
       root.querySelectorAll('input[name="tryon-model"]').forEach(function (input) { input.checked = input.value === state.model.id; });
@@ -674,6 +710,7 @@
       if (saving) ids.push(item.id); else ids.splice(index, 1);
       writeFavorites(ids);
       updateSave();
+      renderItems();
       var message = item.name + (saving ? " saved to Favorites." : " removed from Favorites.");
       status.textContent = message;
       saveServerFavorite(item.id, saving).then(function (ok) {
@@ -700,6 +737,7 @@
       if (!item) return;
       state.item = item;
       state.touched = true;
+      if (state.filter === "favorites" && readFavorites().indexOf(id) === -1) setFilter("all");
       runTryOn();
       var stacked = window.matchMedia("(max-width: 760px)").matches;
       root.querySelector(stacked ? ".rt-tryon-result" : ".rt-tryon-layout").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
@@ -730,6 +768,7 @@
       });
       writeFavorites(merged);
       updateSave();
+      renderItems();
     });
   }
 

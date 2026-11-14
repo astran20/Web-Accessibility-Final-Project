@@ -477,6 +477,14 @@ h1, h2, h3, p { margin-top: 0; }
 .rt-choice-grid { display: grid; gap: 0.7rem; }
 .rt-choice-grid-models { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .rt-choice-grid-items { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.rt-item-filter { display: flex; max-width: 340px; margin: 0 0 0.9rem; border: 2px solid var(--rt-ink); border-radius: var(--rt-radius); }
+.rt-item-filter button { flex: 1 1 0; min-height: 44px; padding: 0.4rem 0.8rem; border: 0; background: var(--rt-paper); color: var(--rt-ink); cursor: pointer; font: 700 0.85rem/1.2 var(--rt-sans); }
+.rt-item-filter button + button { border-left: 2px solid var(--rt-ink); }
+.rt-item-filter button:hover { background: var(--rt-sand); }
+.rt-item-filter button[aria-pressed="true"] { background: var(--rt-ink); color: var(--rt-paper); }
+.rt-item-filter button:focus-visible { outline: 3px solid var(--rt-green); outline-offset: 3px; position: relative; z-index: 1; }
+.rt-choice-empty { padding: 1rem 1.1rem 0.4rem; border: 1px dashed var(--rt-muted); background: var(--rt-sand); }
+.rt-choice-empty p { margin: 0; color: var(--rt-ink); font-size: 0.9rem; }
 .rt-choice { position: relative; min-width: 0; display: flex; flex-direction: column; padding: 0.45rem; border: 1px solid var(--rt-line); border-radius: var(--rt-radius); background: var(--rt-paper); cursor: pointer; transition: border-color 150ms ease, background-color 150ms ease; }
 .rt-choice:hover { border-color: var(--rt-caramel); }
 .rt-choice input { position: absolute; opacity: 0; pointer-events: none; }

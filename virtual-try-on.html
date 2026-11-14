@@ -51,7 +51,15 @@
             </fieldset>
             <fieldset class="rt-choice-group">
               <legend><span class="rt-step" aria-hidden="true">2</span> Choose a piece</legend>
+              <div class="rt-item-filter" role="group" aria-label="Which pieces to show" data-tryon-filter>
+                <button type="button" aria-pressed="false" data-filter="favorites">Favorites</button>
+                <button type="button" aria-pressed="true" data-filter="all">All items</button>
+              </div>
               <div class="rt-choice-grid rt-choice-grid-items" data-tryon-items></div>
+              <div class="rt-choice-empty" data-tryon-empty hidden>
+                <p>You haven't saved any pieces yet. Pick one from All items and press <strong>Save to Favorites</strong> to keep it here.</p>
+                <button class="rt-text-button" type="button" data-tryon-show-all>Show all items</button>
+              </div>
             </fieldset>
           </div>
 
