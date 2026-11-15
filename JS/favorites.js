@@ -28,42 +28,6 @@ function updateSavedHeading() {
     }
 }
 
-//--- API Stuff
-function api() {
-    return window.RETHREAD_API && window.RETHREAD_API.available ? window.RETHREAD_API : null;
-}
-
-function saveServerFavorite(id, saved) {
-
-    if (!api()) return Promise.resolve(true);
-    var call = saved
-      ? api().request("add-favorite", { method: "POST", body: { item_id: id }, visitor: true })
-      : api().request("remove-favorite", { method: "DELETE", body: { item_id: id }, visitor: true });
-    return call.then(() => true).catch(() => false);
-}
-
-function loadServerFavorites() {
-    if (!api()) return Promise.resolve(null);
-    return api().request("favorites", { visitor: true }).then(data => {
-      return (data);
-    }).catch(() => []);
-}
-
-function fromApi(apiItem) {
-    var local = find(ITEMS, apiItem.item_id) || API_ONLY_DETAILS[apiItem.item_id];
-    return {
-      id: apiItem.item_id,
-      name: apiItem.title,
-      category: apiItem.category,
-      size: apiItem.size,
-      price: Math.round(apiItem.price_cents / 100),
-      store: apiItem.store ? apiItem.store.name : "",
-      image: apiItem.image,
-      colors: local ? local.colors : [],
-      tags: local ? local.tags : [],
-      look: local ? local.look : (DEFAULT_LOOKS[apiItem.category] || DEFAULT_LOOKS.outerwear)
-    }
-  }
 
 
 //Function generates array of HTML elements from favorite items
@@ -104,20 +68,37 @@ function createButtons(){
     const favoriteButtons = document.getElementsByClassName('rt-favorite-button');
     loadServerFavorites().then(favorites => {
         const favoritesList = favorites.items;
-        console.log("favoritesList:",favoritesList);
         Array.from(favoriteButtons).forEach(button => {
             const itemId = button.parentElement.parentElement.getAttribute('data-item-id');
-
             if(favoritesList.some(item => item.item_id == itemId)){
                 button.classList.add('is-saved');
             }
-            console.log(itemId, button.classList.contains('is-saved'));
             button.addEventListener('click', () => {
                 button.classList.toggle('is-saved');
                 saveServerFavorite(button.parentElement.parentElement.getAttribute('data-item-id'), button.classList.contains('is-saved'));
-                console.log(button.classList.contains('is-saved'), itemId);
             });
         });
     });
+}
+
+
+//--- API Stuff --> copied from Ismael's tryon.js
+function api() {
+    return window.RETHREAD_API && window.RETHREAD_API.available ? window.RETHREAD_API : null;
+}
+
+function saveServerFavorite(id, saved) {
+    if (!api()) return Promise.resolve(true);
+    var call = saved
+      ? api().request("add-favorite", { method: "POST", body: { item_id: id }, visitor: true })
+      : api().request("remove-favorite", { method: "DELETE", body: { item_id: id }, visitor: true });
+    return call.then(() => true).catch(() => false);
+}
+
+function loadServerFavorites() {
+    if (!api()) return Promise.resolve(null);
+    return api().request("favorites", { visitor: true }).then(data => {
+      return (data);
+    }).catch(() => []);
 }
 

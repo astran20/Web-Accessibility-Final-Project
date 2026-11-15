@@ -250,13 +250,12 @@ Array.from(favoriteButtons).forEach(button => {
 
 
 
-//-- API stuff
+//-- API stuff --> copied from Ismael's tryon.js
 function api() {
     return window.RETHREAD_API && window.RETHREAD_API.available ? window.RETHREAD_API : null;
 }
 
 function saveServerFavorite(id, saved) {
-    console.log("saving:", id, saved);
     if (!api()) return Promise.resolve(true);
     var call = saved
       ? api().request("add-favorite", { method: "POST", body: { item_id: id }, visitor: true })
@@ -265,10 +264,8 @@ function saveServerFavorite(id, saved) {
 }
 
 function loadServerFavorites() {
-    console.log("loading server favorites");
     if (!api()) return Promise.resolve(null);
     return api().request("favorites", { visitor: true }).then(data => {
-      console.log("received server favorites response", data);
       return (data.items || []).map(item => item.item_id);
     }).catch(() => null);
   }
