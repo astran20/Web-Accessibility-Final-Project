@@ -22,33 +22,33 @@ const pricesFilter = document.getElementById('filter-price');
 const numResults = document.getElementById('results-count');
 
 filterPanel.addEventListener('change', () => {
-        let searchFilter = [];
-        let storeFilter = [];
-        let categoryFilter = [];
-        let sizeFilter = [];
-        let priceFilter = [];
-        if(searchBar.value.trim() !== ''){
-            searchFilter = search(searchBar.value.toLowerCase().replace(/\s/g,''));
-        }
-        if(storesFilter.value != ''){
-            storeFilter = filterStores(storesFilter.value);
-        }
-        if(categoriesFilter.value != ''){
-            categoryFilter = filterCategories(categoriesFilter.value)
-        }
-        if(sizesFilter.value != ''){
-            sizeFilter = filterSizes(sizesFilter.value);
-        }
-        if(pricesFilter.value != ''){
-            const min = pricesFilter.value.split('-')[0];
-            const max = pricesFilter.value.split('-')[1];
+    let searchFilter = [];
+    let storeFilter = [];
+    let categoryFilter = [];
+    let sizeFilter = [];
+    let priceFilter = [];
+    if(searchBar.value.trim() !== ''){
+        searchFilter = search(searchBar.value.toLowerCase().replace(/\s/g,''));
+    }
+    if(storesFilter.value != ''){
+        storeFilter = filterStores(storesFilter.value);
+    }
+    if(categoriesFilter.value != ''){
+        categoryFilter = filterCategories(categoriesFilter.value)
+    }
+    if(sizesFilter.value != ''){
+        sizeFilter = filterSizes(sizesFilter.value);
+    }
+    if(pricesFilter.value != ''){
+        const min = pricesFilter.value.split('-')[0];
+        const max = pricesFilter.value.split('-')[1];
 
-            priceFilter = filterPrices(min, max);
-        }
-        
+        priceFilter = filterPrices(min, max);
+    }
+    
 
-        
-        updateFilters(searchFilter, storeFilter, categoryFilter, sizeFilter, priceFilter);
+    
+    updateFilters(searchFilter, storeFilter, categoryFilter, sizeFilter, priceFilter);
 });
 
 filterClear.addEventListener('click', clearFilters);
@@ -182,7 +182,7 @@ sortItems.addEventListener('change', () => {
             return product;
         }
     }).filter(product => product !== undefined);
-    const sortedVisibleProducts = []
+    let sortedVisibleProducts = []
     if(value == "featured"){
         sortedVisibleProducts = Array.from(visibleProducts).sort((a,b) => {
             const aId = Number(a.getAttribute(
@@ -235,7 +235,40 @@ sortItems.addEventListener('change', () => {
 */
 const favoriteButtons = document.getElementsByClassName('rt-favorite-button');
 Array.from(favoriteButtons).forEach(button => {
+    const itemId = button.parentElement.parentElement.getAttribute('data-item-id');
+    loadServerFavorites().then(favorites => {
+        if(favorites.includes(itemId)){
+            button.classList.add('is-saved');
+        }
+    });
+
     button.addEventListener('click', () => {
         button.classList.toggle('is-saved');
+        saveServerFavorite(button.parentElement.parentElement.getAttribute('data-item-id'), button.classList.contains('is-saved'));
     });
 });
+
+
+
+//-- API stuff
+function api() {
+    return window.RETHREAD_API && window.RETHREAD_API.available ? window.RETHREAD_API : null;
+}
+
+function saveServerFavorite(id, saved) {
+    console.log("saving:", id, saved);
+    if (!api()) return Promise.resolve(true);
+    var call = saved
+      ? api().request("add-favorite", { method: "POST", body: { item_id: id }, visitor: true })
+      : api().request("remove-favorite", { method: "DELETE", body: { item_id: id }, visitor: true });
+    return call.then(() => true).catch(() => false);
+}
+
+function loadServerFavorites() {
+    console.log("loading server favorites");
+    if (!api()) return Promise.resolve(null);
+    return api().request("favorites", { visitor: true }).then(data => {
+      console.log("received server favorites response", data);
+      return (data.items || []).map(item => item.item_id);
+    }).catch(() => null);
+  }
