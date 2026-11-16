@@ -134,7 +134,7 @@ $res = api("GET", "/api/items");
 check("returns 200", $res["status"] === 200, $res);
 check("9 pieces by default (sold item-09 left out, held item-10 included)", $res["body"]["count"] === 9 && !in_array("item-09", ids($res)) && in_array("item-10", ids($res)), ids($res));
 check("sends Cache-Control: no-store so a refresh is always current", stripos($res["headers"], "Cache-Control: no-store") !== false);
-check("item objects carry price_display and url", ($res["body"]["items"][0]["price_display"] ?? null) !== null && str_starts_with($res["body"]["items"][0]["url"], "item.html?item_id="));
+check("item objects carry price_display and url", ($res["body"]["items"][0]["price_display"] ?? null) !== null && str_starts_with($res["body"]["items"][0]["url"], "item.html#"));
 
 $res = api("GET", "/api/items?store_id=north-loop");
 check("filters by store", ids($res) !== [] && count(array_unique(array_column(array_column($res["body"]["items"], "store"), "store_id"))) === 1);

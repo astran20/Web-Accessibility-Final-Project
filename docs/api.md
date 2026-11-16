@@ -85,7 +85,7 @@ A piece of clothing listed by a store.
 | "pinned"           | boolean        | Whether the store pinned it to the top of Featured.                |
 | "listed_at"        | string         | When it was listed (ISO 8601).                                     |
 | "sold_at"          | string or null | When it sold (ISO 8601).                                           |
-| "url"              | string         | Link to its detail page, like "item.html?item_id=item-01".         |
+| "url"              | string         | Link to its detail page, like "item.html#item-01".                 |
 | "is_favorite"      | boolean        | Only sent with a valid visitor token. Use it for the heart button's `aria-pressed`. |
 | "featured_score"   | object         | Only sent with `sort=featured&explain=1`. See [Featured Sort](#featured-sort). |
 | "favorites_count", "upcoming_bookings" | number | Only sent on store endpoints.                      |
@@ -116,7 +116,7 @@ A piece of clothing listed by a store.
     "pinned": true,
     "listed_at": "2026-11-04T18:38:23-08:00",
     "sold_at": null,
-    "url": "item.html?item_id=item-01",
+    "url": "item.html#item-01",
     "is_favorite": false
 }
 ```
@@ -240,7 +240,7 @@ An in-store try-on appointment.
         "size": "M",
         "condition": "Excellent",
         "status": "available",
-        "url": "item.html?item_id=item-02"
+        "url": "item.html#item-02"
     },
     "store": {
         "store_id": "juniper-thread",
