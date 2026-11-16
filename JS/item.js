@@ -22,7 +22,7 @@ checkItem.then(data => {
 }).catch(error => {
     console.error("Failed to load item from API", error);
 });
-
+ 
 loadApiItems().then(itemsList => {
     console.log(itemsList);
     if(itemData) {
