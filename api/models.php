@@ -208,7 +208,7 @@ function formatItem(array $row, ?array $favoriteIds = null, ?array $score = null
         "pinned"           => (bool)$row["pinned"],
         "listed_at"        => isoTime((int)$row["listed_at"]),
         "sold_at"          => isoTime($row["sold_at"] === null ? null : (int)$row["sold_at"]),
-        "url"              => "item.html?item_id=" . rawurlencode($row["item_id"]),
+        "url"              => "item.html#" . rawurlencode($row["item_id"]),
     ];
     if ($favoriteIds !== null) {
         $item["is_favorite"] = in_array($row["item_id"], $favoriteIds, true);
@@ -418,7 +418,7 @@ function formatBooking(array $row): array {
             "size"          => $row["item_size"],
             "condition"     => $row["item_condition"],
             "status"        => $row["item_status"],
-            "url"           => "item.html?item_id=" . rawurlencode($row["item_id"]),
+            "url"           => "item.html#" . rawurlencode($row["item_id"]),
         ],
         "store"          => [
             "store_id"      => $row["store_id"],
