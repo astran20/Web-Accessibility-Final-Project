@@ -24,7 +24,7 @@ checkItem.then(data => {
 });
 
 loadApiItems().then(itemsList => {
-    
+    console.log(itemsList);
     if(itemData) {
         renderFeaturedItem(itemData);
     }
@@ -45,8 +45,8 @@ loadApiItems().then(itemsList => {
 function generateFeaturedItemHTML(item) {
     return `
         <div class="rt-detail-image">
-          <img src="${item.image}" alt="${item.description}">
-          <span class="rt-image-caption">Sample listing · Second Story Vintage</span>
+          <img src="${item.image}" alt="${item.image_alt}">
+          <span class="rt-image-caption">Sample listing · ${item.store.name ? item.store.name : 'Not specified'}</span>
         </div>
         <div class="rt-detail-copy">
           <p class="rt-eyebrow">${item.store.name ? item.store.name : 'Not specified'}</p>
@@ -111,7 +111,7 @@ function generateOtherItemsHTML(items) {
         link.style.textDecoration = 'none';
         const template = `
                 <article class="rt-detail-row" id="item-${item.item_id}" data-item-id="${item.item_id}">
-                    <img src="${item.image}" alt="${item.description}" loading="lazy">
+                    <img src="${item.image}" alt="${item.image_alt}" loading="lazy">
                     <div><p class="rt-eyebrow">${item.store.name ? item.store.name : 'Not specified'}</p><h3>${item.title ? item.title : 'Not specified'}</h3><p>${item.price_display ? item.price_display : 'Not specified'} · Size ${item.size ? item.size : 'Not specified'} · ${item.condition ? item.condition : 'Not specified'} condition</p><p>${item.description ? item.description : 'Not specified'}</p><a class="rt-text-link" href="stores.html#${item.store.address}">Store details <span aria-hidden="true">→</span></a></div>
                 </article>
  
