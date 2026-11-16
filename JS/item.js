@@ -2,26 +2,40 @@
     JavaScript file for item.html
 */
 
+window.addEventListener('hashchange', () => {
+    if("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+    }
+    window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
+    window.location.reload();
+    
+});
 const itemId = window.location.hash.split('#')[1];
 const featuredItemContainer = document.getElementsByClassName('rt-featured-item')[0];
+const otherItemsContainer = document.getElementsByClassName('rt-detail-list')[0];
+otherItemsContainer.innerHTML = '';
 
 const checkItem = api().request("item", { query: { item_id: itemId } });
 let itemData;
 checkItem.then(data => {
     itemData = data.item;
-    console.log(itemData);
 }).catch(error => {
     console.error("Failed to load item from API", error);
 });
 
 loadApiItems().then(itemsList => {
-    console.log(itemsList.items);
+    
     if(itemData) {
         renderFeaturedItem(itemData);
     }
     
-    //To do: render the rest of the items
     const otherItems = itemsList.items.filter(item => item.item_id != itemData.item_id);
+
+    if(otherItems){
+        otherItems.sort((a,b) => a.listed_at - b.listed_at);
+        otherItemsContainer.innerHTML = generateOtherItemsHTML(otherItems);
+    }
+    
     
 }).catch(error => {
     console.error("Failed to load items from API", error);
@@ -29,7 +43,6 @@ loadApiItems().then(itemsList => {
 
 // Function generates HTML for featured item
 function generateFeaturedItemHTML(item) {
-    console.log("generating:", item);
     return `
         <div class="rt-detail-image">
           <img src="${item.image}" alt="${item.description}">
@@ -87,6 +100,26 @@ function createButtonsFavorites() {
             });
         });
     }
+}
+
+// Function dynamically enerates HTML for 5 non-featured items
+function generateOtherItemsHTML(items) {
+    let html = '';
+    items.slice(0, 5).forEach(item => {
+        const link = document.createElement('a');
+        link.href = `item.html#${item.item_id}`;
+        link.style.textDecoration = 'none';
+        const template = `
+                <article class="rt-detail-row" id="item-${item.item_id}" data-item-id="${item.item_id}">
+                    <img src="${item.image}" alt="${item.description}" loading="lazy">
+                    <div><p class="rt-eyebrow">${item.store.name ? item.store.name : 'Not specified'}</p><h3>${item.title ? item.title : 'Not specified'}</h3><p>${item.price_display ? item.price_display : 'Not specified'} · Size ${item.size ? item.size : 'Not specified'} · ${item.condition ? item.condition : 'Not specified'} condition</p><p>${item.description ? item.description : 'Not specified'}</p><a class="rt-text-link" href="stores.html#${item.store.address}">Store details <span aria-hidden="true">→</span></a></div>
+                </article>
+ 
+        `;
+        link.innerHTML = template;
+        html += link.outerHTML;
+    });
+    return html;
 }
 
 // Function gets all items from the API
