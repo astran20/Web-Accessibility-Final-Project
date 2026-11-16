@@ -507,7 +507,7 @@
   function loadServerFavorites() {
     if (!api()) return Promise.resolve(null);
     return api().request("favorites", { visitor: true }).then(function (data) {
-      return (data.items || []).map(function (item) { return item.item_id; });
+      return (data.items || []).map(function (item) { return item.item_id;});
     }).catch(function () { return null; });
   }
 
