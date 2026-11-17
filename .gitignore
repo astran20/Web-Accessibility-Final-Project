@@ -7,3 +7,6 @@ data/*.db-journal
 # Photos uploaded through the store dashboard
 uploads/items/*
 !uploads/items/.gitkeep
+
+# Local scripts. Files already tracked in tools/ (generate-tryon-models.js) stay tracked.
+tools/*

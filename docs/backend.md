@@ -47,13 +47,7 @@ Any host with PHP 8.0 or newer can run the whole site, pages and API together. O
 Before putting it anywhere public, turn off RESET_DATABASE and change the demo auth codes. If the pages and the API end up on different domains, add the pages' address to ALLOWED_ORIGINS.
 
 ### SCU Engineering Server
-The live copy is at <https://ssl.students.engr.scu.edu/~cjgray/rethread/>, served from `/webpages/cjgray/rethread` on the engineering Linux machines. That server runs PHP 8.0 under Apache as the `apache` user, which is why `data/` and `uploads/items/` are world-writable there, and why the root `.htaccess` blocks directory listings with a rewrite rule instead of `Options -Indexes` (the server doesn't allow Options). To update it:
-
-```bash
-sh tools/deploy-scu.sh
-```
-
-It sends only files tracked by git and leaves the live database alone. To reset the live data, delete `data/rethread.db` on the server and the next request rebuilds it.
+The live copy is at <https://ssl.students.engr.scu.edu/~cjgray/rethread/>, served from `/webpages/cjgray/rethread` on the engineering Linux machines. That server runs PHP 8.0 under Apache as the `apache` user, which is why `data/` and `uploads/items/` are world-writable there, and why the root `.htaccess` blocks directory listings with a rewrite rule instead of `Options -Indexes` (the server doesn't allow Options). Charlie deploys it by copying the tracked files over, leaving the live database alone. To reset the live data, delete `data/rethread.db` on the server and the next request rebuilds it.
 
 ### GitHub Pages
 GitHub Pages can't run PHP, and it serves the `.php` files as plain text, which is why nothing secret goes in this repo. On github.io, `api-config.js` sends requests to REMOTE_API_BASE, which points at the SCU copy. `https://astran20.github.io` is already in ALLOWED_ORIGINS.
@@ -65,7 +59,6 @@ router.php            Routes /api/<name> to api/<name>.php under php -S and bloc
 config.php            Settings
 server-reset.php      Wipes and reloads the database (command line only)
 api-config.js         Fetch helper for the front end
-tools/deploy-scu.sh   Copies the site to the SCU engineering server
 api/helpers.php       Error objects, auth checks, input validation, JSON responses
 api/database.php      Schema, first-run setup and sample data
 api/models.php        Featured scoring, time slots, inventory rules, photo uploads, impact numbers
