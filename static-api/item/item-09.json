@@ -1,0 +1,67 @@
+{
+    "item": {
+        "item_id": "item-09",
+        "title": "Burgundy Wool Coat",
+        "store": {
+            "store_id": "juniper-thread",
+            "name": "Juniper & Thread",
+            "neighborhood": "Haight-Ashbury",
+            "address": "1632 Haight Street",
+            "city": "San Francisco, CA",
+            "description": "Colorful layers, soft tailoring, and standout finds with a relaxed, collected feel.",
+            "image": "assets/images/juniper-thread-interior.jpg",
+            "image_alt": "Rows of colorful secondhand clothes on wooden hangers",
+            "hours": {
+                "mon": {
+                    "open": "11:00",
+                    "close": "18:00"
+                },
+                "tue": {
+                    "open": "11:00",
+                    "close": "18:00"
+                },
+                "wed": {
+                    "open": "11:00",
+                    "close": "18:00"
+                },
+                "thu": {
+                    "open": "11:00",
+                    "close": "18:00"
+                },
+                "fri": {
+                    "open": "11:00",
+                    "close": "18:00"
+                },
+                "sat": {
+                    "open": "11:00",
+                    "close": "18:00"
+                },
+                "sun": {
+                    "open": "11:00",
+                    "close": "18:00"
+                }
+            },
+            "hours_display": "Daily 11 am–6 pm",
+            "slot_minutes": 60,
+            "slot_capacity": 2,
+            "url": "stores.html#store-juniper-thread"
+        },
+        "category": "outerwear",
+        "size": "M",
+        "price_cents": 9200,
+        "price_display": "$92",
+        "condition": "Very good",
+        "material": "Wool blend",
+        "description": "A knee-length burgundy coat with a notched collar. Included in the sample data to show the sold state.",
+        "image": "assets/burgundy-coat.jpg",
+        "image_alt": "Burgundy wool coat with a notched collar",
+        "try_on_supported": false,
+        "status": "sold",
+        "status_label": "Sold",
+        "is_bookable": false,
+        "pinned": false,
+        "listed_at": "2026-10-27T18:49:46-07:00",
+        "sold_at": "2026-11-15T17:49:46-08:00",
+        "url": "item.html#item-09"
+    }
+}

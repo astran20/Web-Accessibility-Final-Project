@@ -46,7 +46,15 @@ Any host with PHP 8.1 or newer can run the whole site, pages and API together. O
 
 Before putting it anywhere public, turn off RESET_DATABASE and change the demo auth codes. If the pages and the API end up on different domains, add the pages' address to ALLOWED_ORIGINS.
 
-GitHub Pages can't run PHP. A Pages copy shows the HTML, CSS and images, but nothing under `api/` works, and Pages serves the `.php` files as plain text. That's why nothing secret goes in this repo. To give a Pages copy a working API, host the PHP somewhere else and put that address in REMOTE_API_BASE in `api-config.js`. `https://astran20.github.io` is already in ALLOWED_ORIGINS.
+GitHub Pages can't run PHP, and it serves the `.php` files as plain text, which is why nothing secret goes in this repo. When `api-config.js` sees it's on github.io with REMOTE_API_BASE empty, it switches to static mode: the catalog, item and store reads come from the JSON snapshot in `static-api/`, favorites live in the browser's localStorage, and anything that writes (bookings, the store portal) returns API_UNAVAILABLE. The live copy is at <https://astran20.github.io/Web-Accessibility-Final-Project/>.
+
+The snapshot doesn't update itself. After changing the sample data or the response format, rebuild it and commit the result:
+
+```bash
+php tools/export-static-api.php
+```
+
+To give a Pages copy the full API instead, host the PHP somewhere else and put that address in REMOTE_API_BASE. `https://astran20.github.io` is already in ALLOWED_ORIGINS.
 
 ## Files
 ```
@@ -54,7 +62,9 @@ router.php            Routes /api/<name> to api/<name>.php under php -S and bloc
 .htaccess             The same rules for Apache
 config.php            Settings
 server-reset.php      Wipes and reloads the database (command line only)
-api-config.js         Fetch helper for the front end
+api-config.js         Fetch helper for the front end, with the static fallback for GitHub Pages
+static-api/           Read-only API snapshot used on GitHub Pages
+tools/export-static-api.php  Rebuilds static-api/ from the sample data
 api/helpers.php       Error objects, auth checks, input validation, JSON responses
 api/database.php      Schema, first-run setup and sample data
 api/models.php        Featured scoring, time slots, inventory rules, photo uploads, impact numbers

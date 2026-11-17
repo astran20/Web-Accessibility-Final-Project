@@ -1,0 +1,64 @@
+{
+    "item": {
+        "item_id": "item-03",
+        "title": "Blue Denim Jacket",
+        "store": {
+            "store_id": "north-loop",
+            "name": "North Loop Archive",
+            "neighborhood": "Hayes Valley",
+            "address": "425 Gough Street",
+            "city": "San Francisco, CA",
+            "description": "Everyday staples and easy outerwear, chosen for good fabric and lasting wear.",
+            "image": "assets/images/north-loop-interior.jpg",
+            "image_alt": "A warm independent clothing shop with wooden shelving, a vintage chair, and a rail of garments",
+            "hours": {
+                "mon": null,
+                "tue": {
+                    "open": "10:00",
+                    "close": "18:00"
+                },
+                "wed": {
+                    "open": "10:00",
+                    "close": "18:00"
+                },
+                "thu": {
+                    "open": "10:00",
+                    "close": "18:00"
+                },
+                "fri": {
+                    "open": "10:00",
+                    "close": "18:00"
+                },
+                "sat": {
+                    "open": "10:00",
+                    "close": "18:00"
+                },
+                "sun": {
+                    "open": "10:00",
+                    "close": "18:00"
+                }
+            },
+            "hours_display": "Tue–Sun 10 am–6 pm · Closed Mon",
+            "slot_minutes": 60,
+            "slot_capacity": 2,
+            "url": "stores.html#store-north-loop"
+        },
+        "category": "outerwear",
+        "size": "S",
+        "price_cents": 8400,
+        "price_display": "$84",
+        "condition": "Very good",
+        "material": "Denim",
+        "description": "A light-wash denim jacket with a pale contrast collar and front pockets. The sample listing does not specify the collar fabric.",
+        "image": "assets/images/blue-denim-jacket.jpg",
+        "image_alt": "Light blue denim jacket hanging against a pale wall",
+        "try_on_supported": true,
+        "status": "available",
+        "status_label": "Available",
+        "is_bookable": true,
+        "pinned": false,
+        "listed_at": "2026-11-07T17:49:46-08:00",
+        "sold_at": null,
+        "url": "item.html#item-03"
+    }
+}
