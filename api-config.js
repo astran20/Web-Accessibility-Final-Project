@@ -11,7 +11,7 @@
  By Charlie Gray - RETHREAD, SCU CSEN 163
 */
 (function () {
-  const REMOTE_API_BASE = ""; // for example "https://rethread-api.example.edu/"
+  const REMOTE_API_BASE = "https://ssl.students.engr.scu.edu/~cjgray/rethread/";
 
   const onGitHubPages = window.location.hostname.endsWith("github.io");
   const base = onGitHubPages ? REMOTE_API_BASE : "";

@@ -11,7 +11,7 @@ Created for SCU CSEN 163.
 
 ## Requirements
 
-This project requires PHP 8.1 or newer. 
+This project requires PHP 8.0 or newer. 
 
 You can check your PHP version by running `php -v`.
 
@@ -28,6 +28,10 @@ php -S localhost:8000 router.php
 The site is at <http://localhost:8000> and the demo console is at <http://localhost:8000/demo/>. 
 
 The database builds itself on the first request, using the sample stores, pieces, and bookings in `data/`.
+
+## Live Copies
+
+The full site, API included, runs at <https://ssl.students.engr.scu.edu/~cjgray/rethread/>. The GitHub Pages copy at <https://astran20.github.io/Web-Accessibility-Final-Project/> calls that same API.
 
 ## Running the Demo Console
 

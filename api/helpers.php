@@ -40,19 +40,22 @@ class APIException extends Exception {
     }
 }
 
+// fail(), failMany() and sendJSON() never return: they throw or exit. They're typed void rather
+// than never because never needs PHP 8.1, and the SCU engineering server runs 8.0.
+
 // DESC: Stops the endpoint with a single error
-function fail(int $status, string $code, string $message, ?string $field = null): never {
+function fail(int $status, string $code, string $message, ?string $field = null): void {
     throw new APIException($status, [new APIError($code, $message, $field)]);
 }
 
 // DESC: Stops the endpoint with several errors (for example, every invalid form field at once)
-function failMany(int $status, array $errors): never {
+function failMany(int $status, array $errors): void {
     throw new APIException($status, $errors);
 }
 
 // ---------- Responses ----------
 
-function sendJSON(int $status, $data): never {
+function sendJSON(int $status, $data): void {
     http_response_code($status);
     echo json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     exit;
