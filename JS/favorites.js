@@ -9,6 +9,10 @@ const emptyFavorites = document.getElementById('empty-favorites');
 
 let numFavorites = 0;
 loadServerFavorites().then(favorites => {
+    if (!favorites || !Array.isArray(favorites.items)) {
+        showLoadError();
+        return;
+    }
     numFavorites = favorites.count;
 
     updateSavedHeading();
@@ -16,7 +20,16 @@ loadServerFavorites().then(favorites => {
     renderFavoriteItems(favorites.items);
 }).catch(error => {
     console.error("Error loading server favorites:", error);
+    showLoadError();
 });
+
+// Shown when the favorites API can't be reached, instead of "undefined saved pieces"
+function showLoadError() {
+    savedHeading.textContent = "We couldn't load your saved pieces";
+    emptyFavorites.setAttribute('hidden', '');
+    const container = document.getElementsByClassName('rt-favorites-grid')[0];
+    container.innerHTML = '<p role="alert">Favorites are saved on the RETHREAD server, and it didn\'t respond. Check your connection and refresh the page.</p>';
+}
 
 // Update the saved heading with the number of favorites
 function updateSavedHeading() {
@@ -39,7 +52,7 @@ function generateFavoriteItemsHTML(favoriteItems) {
                     <a href="item.html#${item.item_id}" aria-label="View ${item.title} details">
                         <img src="${item.image}" alt="${item.title}">
                     </a>
-                    <button class="rt-favorite-button is-saved" type="button" data-favorite-toggle="${item.item_id}" aria-pressed="${item.is_saved}" aria-label="Remove ${item.title} from favorites">
+                    <button class="rt-favorite-button is-saved" type="button" data-favorite-toggle="${item.item_id}" aria-pressed="true" aria-label="Remove ${item.title} from favorites">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 8.8c0 5.2-8.2 10.1-8.2 10.1S3.8 14 3.8 8.8a4.2 4.2 0 0 1 7.8-2.1 4.2 4.2 0 0 1 8.6 2.1Z"/></svg>
                     </button>
                 </div>
@@ -57,7 +70,7 @@ function generateFavoriteItemsHTML(favoriteItems) {
 
 // Function renders the list of favorite items in the DOM sorted by most recently added
 function renderFavoriteItems(favoriteItems) {
-    favoriteItems.sort((a, b) => b.saved_at - a.saved_at);
+    favoriteItems.sort((a, b) => Date.parse(b.saved_at) - Date.parse(a.saved_at));
     const container = document.getElementsByClassName('rt-favorites-grid')[0];
    container.innerHTML = generateFavoriteItemsHTML(favoriteItems);
     createButtons();
@@ -65,18 +78,13 @@ function renderFavoriteItems(favoriteItems) {
 
 // Function creates button listeners for favorite button
 function createButtons(){
+    // Every card on this page is a saved piece, so the buttons start out saved (is-saved is in the HTML)
     const favoriteButtons = document.getElementsByClassName('rt-favorite-button');
-    loadServerFavorites().then(favorites => {
-        const favoritesList = favorites.items;
-        Array.from(favoriteButtons).forEach(button => {
-            const itemId = button.parentElement.parentElement.getAttribute('data-item-id');
-            if(favoritesList.some(item => item.item_id == itemId)){
-                button.classList.add('is-saved');
-            }
-            button.addEventListener('click', () => {
-                button.classList.toggle('is-saved');
-                saveServerFavorite(button.parentElement.parentElement.getAttribute('data-item-id'), button.classList.contains('is-saved'));
-            });
+    Array.from(favoriteButtons).forEach(button => {
+        button.addEventListener('click', () => {
+            button.classList.toggle('is-saved');
+            button.setAttribute('aria-pressed', button.classList.contains('is-saved'));
+            saveServerFavorite(button.parentElement.parentElement.getAttribute('data-item-id'), button.classList.contains('is-saved'));
         });
     });
 }
@@ -99,6 +107,9 @@ function loadServerFavorites() {
     if (!api()) return Promise.resolve(null);
     return api().request("favorites", { visitor: true }).then(data => {
       return (data);
-    }).catch(() => []);
+    }).catch(error => {
+      console.error("Error loading server favorites:", error);
+      return null;
+    });
 }
 
