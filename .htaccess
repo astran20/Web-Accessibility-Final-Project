@@ -1,7 +1,13 @@
 # RETHREAD on Apache: clean API URLs and no access to internal files.
 # (PHP's built-in server ignores this file and uses router.php instead.)
-Options -Indexes
 RewriteEngine On
+
+# No directory listings. This does what "Options -Indexes" would, for hosts like the SCU
+# engineering server that don't allow Options in .htaccess.
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_FILENAME}/index.html !-f
+RewriteCond %{REQUEST_FILENAME}/index.php !-f
+RewriteRule ^ - [F,L]
 
 RewriteRule (^|/)\. - [F,L]
 RewriteRule ^(config\.php|server-reset\.php|router\.php)$ - [F,L]
