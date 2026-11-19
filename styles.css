@@ -760,3 +760,58 @@ body.rt-assistant-open .rt-assistant-launcher { display: none; }
   .rethread-site *::before,
   .rethread-site *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
+
+/* Booking Alert Pop-up */
+#customAlert {
+  width: min(90%, 440px);
+  max-height: 85vh;
+  padding: 32px;
+  border: 1px solid #D5CFC3;
+  border-top: 4px solid #345746;
+  border-radius: 8px;
+  background: #FBF9F6;
+  color: #243C32;
+  box-shadow: 0 16px 48px rgba(36, 60, 50, 0.2);
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
+}
+
+#customAlert::backdrop {
+  background: rgba(20, 35, 28, 0.55);
+  backdrop-filter: blur(3px);
+}
+
+#customAlert p {
+  margin: 0 0 24px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #4F5A53;
+}
+
+#customAlert button {
+  min-width: 110px;
+  min-height: 44px;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 4px;
+  background: #345746;
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#customAlert button:hover {
+  background: #263F32;
+}
+
+#customAlert button:focus-visible {
+  outline: 3px solid #A66B45;
+  outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  #customAlert {
+    padding: 24px 20px;
+  }
+}
