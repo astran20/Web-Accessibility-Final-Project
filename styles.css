@@ -519,6 +519,7 @@ h1, h2, h3, p { margin-top: 0; }
 .rt-tryon-actions .rt-button { flex: 1 1 140px; }
 .rt-tryon-actions .rt-button[aria-pressed="true"] { background: var(--rt-green); color: var(--rt-paper) !important; }
 .rt-pin-button { margin-top: 0.4rem; }
+.rt-tryon-controls {height: 85vh; overflow-y: auto}
 .rt-tryon-compare { padding: 1.3rem 1.8rem 1.8rem; border-top: 1px solid var(--rt-line); }
 .rt-compare-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; max-width: 640px; }
 .rt-compare-card { margin: 0; padding: 0.9rem; border: 1px solid var(--rt-line); background: var(--rt-paper); }
