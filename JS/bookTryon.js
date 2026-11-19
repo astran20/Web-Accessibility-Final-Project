@@ -19,7 +19,7 @@ checkItem.then(data => {
 
     bookingForm.addEventListener('submit', event => {
         event.preventDefault();
-        alert("Thanks for submitting a booking! Your default email app will now open and request to send an email confirmation. Please check your email app to send the confirmation if you want to save it.");
+        //alert("Thanks for submitting a booking! Your default email app will now open and request to send an email confirmation. Please check your email app to send the confirmation if you want to save it.");
 
         const formData = new FormData(bookingForm);
         const recepient = formData.get('email');
@@ -27,7 +27,7 @@ checkItem.then(data => {
         const body = `Hello ${formData.get('name')},\n\nThank you for booking a visit to try on the item "${data.item.title}".\n\n Here are your booking details:\n\nDate: ${formData.get('date')}\nTime: ${formData.get('time')}\nNotes: ${formData.get('notes')}\n\nBest regards,\nThe Rethread Team`;
         const mailtoLink = `mailto:${recepient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.location.href = mailtoLink;
-
+        document.getElementById('customAlert').showModal();
         const bookingSuccess = document.getElementById('booking-success');
         bookingSuccess.innerHTML = `
             <p class="rt-eyebrow">YOU'RE ALL SET</p>
@@ -66,6 +66,9 @@ function renderBookingSummary(item) {
           </div>
     `;
 }
+
+
+  
 
 
 
