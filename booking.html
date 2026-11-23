@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#F6F3EC">
-    <title>Book a Try-On | RETHREAD</title>
+    <title>Book an In-Store Fitting | RETHREAD</title>
     <link rel="stylesheet" href="styles.css">
     <script src="api-config.js" defer></script>
     <script src="JS/bookTryon.js" defer></script>
@@ -13,7 +13,7 @@
     <a class="rt-skip-link" href="#main-content">Skip to main content</a>
     <header class="rt-header">
       <div class="rt-header-inner">
-        <a class="rt-wordmark" href="index.html" aria-label="RETHREAD home">RETHREAD<span aria-hidden="true">.</span></a>
+        <a class="rt-wordmark" href="index.html" aria-label="RETHREAD home"><svg class="rt-logo-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><circle cx="16" cy="16" r="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="50 19.1" transform="rotate(-35 16 16)"/><path d="M8.5 23.5 23 9" fill="none" stroke="#A66B45" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="24.4" cy="7.6" rx="1.9" ry="1.2" transform="rotate(-45 24.4 7.6)" fill="none" stroke="#A66B45" stroke-width="1.3"/></svg><span class="rt-wordmark-text">RETHREAD<span aria-hidden="true">.</span></span></a>
         <nav class="rt-nav" aria-label="Main navigation">
           <a href="index.html#clothes">Explore</a>
           <a href="stores.html">Stores</a>
@@ -29,7 +29,7 @@
       <div class="rt-page-heading rt-booking-heading">
         <p class="rt-eyebrow">TRY IT ON, IN PERSON</p>
         <h1>Plan a visit.</h1>
-        <p>Choose a time to try this sample piece at the shop. No information is sent or stored in this static prototype.</p>
+        <p>Pick a day and time to try this piece on at the shop, and you'll get a confirmation code. The shops and pieces are samples for our class project.</p>
       </div>
 
       <div class="rt-booking-layout">
@@ -38,7 +38,7 @@
         </aside>
 
         <section class="rt-booking-form-wrap" aria-labelledby="booking-form-heading">
-          <h2 id="booking-form-heading">Request a try-on</h2>
+          <h2 id="booking-form-heading">Book an in-store fitting</h2>
           <p class="rt-required-note"><span aria-hidden="true">*</span> Required fields</p>
           <div class="rt-form-notice" id="booking-feedback" role="status" aria-live="polite"></div>
           <form id="booking-form" data-booking-form action="booking.html" method="get">
@@ -60,14 +60,10 @@
               </div>
               <div class="rt-form-field" data-field="time">
                 <label for="booking-time">Available time <span aria-hidden="true">*</span></label>
-                <select id="booking-time" name="time" required aria-describedby="booking-time-error booking-time-note">
-                  <option value="">Choose a time</option>
-                  <option value="10:30">10:30 am</option>
-                  <option value="11:30" disabled>11:30 am — fully booked</option>
-                  <option value="2:00">2:00 pm</option>
-                  <option value="3:30">3:30 pm</option>
-                </select>
-                <p class="rt-field-note" id="booking-time-note">Example availability only. Closed times are shown but can't be selected.</p>
+                <select id="booking-time" name="time" required disabled aria-describedby="booking-time-error booking-time-note">
+                  <option value="">Pick a date first</option>
+                                  </select>
+                <p class="rt-field-note" id="booking-time-note">Times that are full are shown but can't be picked.</p>
                 <p class="rt-field-error" id="booking-time-error" data-field-error="time" role="alert" hidden>Choose one of the available times.</p>
               </div>
             </div>
@@ -75,8 +71,7 @@
               <label for="booking-notes">Anything you'd like the shop to know? <span class="rt-optional">(optional)</span></label>
               <textarea id="booking-notes" name="notes" rows="4" placeholder="A fit question or a note for your visit"></textarea>
             </div>
-            <p class="rt-booking-static-note">Static preview only. The button below is not connected until the booking flow is implemented.</p>
-            <button class="rt-button rt-button-primary rt-submit-button" type="submit" data-booking-submit>Confirm Booking</button>
+                        <button class="rt-button rt-button-primary rt-submit-button" type="submit" data-booking-submit>Book my fitting</button>
             <a class="rt-cancel-link" href="item.html#item-01">Cancel and return to the item</a>
           </form>
 
@@ -109,14 +104,10 @@
       </template>
     </main>
 
-    <dialog id="customAlert">
-      <p>Thanks for submitting a booking! Your default email app will now open and request to send an email confirmation. Please check your email app to send the confirmation if you want to save it.</p>
-      <button onclick="document.getElementById('customAlert').close()">OK</button>
-    </dialog>
 
     <footer class="rt-footer">
       <div class="rt-container rt-footer-inner">
-        <a class="rt-wordmark" href="index.html">RETHREAD<span aria-hidden="true">.</span></a>
+        <a class="rt-wordmark" href="index.html" aria-label="RETHREAD home"><svg class="rt-logo-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><circle cx="16" cy="16" r="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="50 19.1" transform="rotate(-35 16 16)"/><path d="M8.5 23.5 23 9" fill="none" stroke="#A66B45" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="24.4" cy="7.6" rx="1.9" ry="1.2" transform="rotate(-45 24.4 7.6)" fill="none" stroke="#A66B45" stroke-width="1.3"/></svg><span class="rt-wordmark-text">RETHREAD<span aria-hidden="true">.</span></span></a>
         <p>Find your next favorite, close to home.</p>
         <span>Classroom prototype · Sample listings only</span>
       </div>

@@ -50,7 +50,7 @@ function generateFavoriteItemsHTML(favoriteItems) {
             <article class="rt-product-card" data-item-id="${item.item_id}">
                 <div class="rt-product-image">
                     <a href="item.html#${item.item_id}" aria-label="View ${item.title} details">
-                        <img src="${item.image}" alt="${item.title}">
+                        <img src="${item.image}" alt="${item.image_alt || item.title}">
                     </a>
                     <button class="rt-favorite-button is-saved" type="button" data-favorite-toggle="${item.item_id}" aria-pressed="true" aria-label="Remove ${item.title} from favorites">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 8.8c0 5.2-8.2 10.1-8.2 10.1S3.8 14 3.8 8.8a4.2 4.2 0 0 1 7.8-2.1 4.2 4.2 0 0 1 8.6 2.1Z"/></svg>
@@ -58,8 +58,8 @@ function generateFavoriteItemsHTML(favoriteItems) {
                 </div>
                 <div class="rt-product-info">
                     <div class="rt-product-title-row"><h3><a href="item.html#${item.item_id}">${item.title}</a></h3><span class="rt-price">${item.price_display}</span></div>
-                    <p class="rt-product-meta">${item.size} <span aria-hidden="true">·</span> ${item.category} <span aria-hidden="true">·</span> ${item.price_display}</p>
-                    <a class="rt-store-link" href="stores.html#${item.store.name}">${item.store.name} <span aria-hidden="true">↗</span></a>
+                    <p class="rt-product-meta">${item.size} <span aria-hidden="true">·</span> ${item.condition} condition</p>
+                    <a class="rt-store-link" href="stores.html#store-${item.store.store_id}">${item.store.name} <span aria-hidden="true">→</span></a>
                 </div>
             </article>
         `;
@@ -76,17 +76,60 @@ function renderFavoriteItems(favoriteItems) {
     createButtons();
 }
 
-// Function creates button listeners for favorite button
+// Function creates button listeners for favorite button.
+// Part C (HE-7): unsaving removes the card right away, updates the count, and offers Undo.
 function createButtons(){
-    // Every card on this page is a saved piece, so the buttons start out saved (is-saved is in the HTML)
     const favoriteButtons = document.getElementsByClassName('rt-favorite-button');
     Array.from(favoriteButtons).forEach(button => {
-        button.addEventListener('click', () => {
-            button.classList.toggle('is-saved');
-            button.setAttribute('aria-pressed', button.classList.contains('is-saved'));
-            saveServerFavorite(button.parentElement.parentElement.getAttribute('data-item-id'), button.classList.contains('is-saved'));
-        });
+        button.addEventListener('click', () => removeFavorite(button.closest('.rt-product-card')));
     });
+}
+
+function removeFavorite(card) {
+    const itemId = card.getAttribute('data-item-id');
+    const title = card.querySelector('h3').textContent;
+    const parent = card.parentElement;
+    const nextSibling = card.nextElementSibling;
+    card.remove();
+    numFavorites--;
+    updateSavedHeading();
+    saveServerFavorite(itemId, false);
+
+    showToast(`Removed ${title} from your favorites.`, 'Undo', () => {
+        parent.insertBefore(card, nextSibling && nextSibling.isConnected ? nextSibling : null);
+        numFavorites++;
+        updateSavedHeading();
+        saveServerFavorite(itemId, true);
+        card.querySelector('.rt-favorite-button').focus();
+        showToast(`${title} is back in your favorites.`);
+    });
+    const firstLeft = parent.querySelector('.rt-favorite-button');
+    if (firstLeft) firstLeft.focus();
+}
+
+function showToast(message, actionLabel, onAction) {
+    let toast = document.querySelector('.rt-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'rt-toast';
+        toast.setAttribute('role', 'status');
+        document.body.appendChild(toast);
+    }
+    toast.innerHTML = '';
+    const text = document.createElement('span');
+    text.textContent = message;
+    toast.appendChild(text);
+    if (actionLabel) {
+        const action = document.createElement('button');
+        action.type = 'button';
+        action.className = 'rt-toast-action';
+        action.textContent = actionLabel;
+        action.addEventListener('click', () => { toast.classList.remove('is-visible'); onAction(); }, { once: true });
+        toast.appendChild(action);
+    }
+    toast.classList.add('is-visible');
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(() => toast.classList.remove('is-visible'), actionLabel ? 6000 : 2600);
 }
 
 

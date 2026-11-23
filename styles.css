@@ -827,3 +827,90 @@ body.rt-assistant-open .rt-assistant-launcher { display: none; }
   background-position: right 16px center;
   background-size: 16px;
 }
+
+/* ==========================================================================
+   Part C fixes (Assignment 3 heuristic evaluation)
+   ========================================================================== */
+
+/* HE-4: logo mark next to the wordmark, in the header and footer */
+.rt-wordmark { display: inline-flex; align-items: center; gap: 0.55rem; }
+.rt-logo-mark { width: 30px; height: 30px; flex: none; color: var(--rt-green); transition: transform 300ms ease; }
+.rt-wordmark:hover .rt-logo-mark { transform: rotate(-20deg); }
+.rt-wordmark .rt-wordmark-text { color: var(--rt-green); }
+.rt-wordmark .rt-wordmark-text span { color: var(--rt-caramel); }
+
+/* HE-2: links show they're clickable on hover and keyboard focus */
+.rt-store-link,
+.rt-text-link,
+.rt-detail-store a,
+.rt-detail-row-title { transition: color 150ms ease, text-decoration-color 150ms ease; }
+.rt-store-link:hover,
+.rt-store-link:focus-visible,
+.rt-detail-store a:hover,
+.rt-detail-row-title:hover { color: var(--rt-caramel) !important; text-decoration-thickness: 2px; }
+.rt-detail-row-title { color: inherit; text-decoration: none; }
+.rt-detail-row-title:hover { text-decoration: underline; }
+.rt-text-link:hover span { transform: translateX(3px); }
+.rt-text-link span { transition: transform 150ms ease; }
+
+/* HE-1: Sort by uses the same single chevron as the filters, with room from the border */
+.rt-sort-field select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23243C32' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+}
+
+/* Group HE-6, HE-7: a short message when you save, unsave, or undo */
+.rt-toast {
+  position: fixed; left: 50%; bottom: 1.5rem; z-index: 60;
+  display: flex; align-items: center; gap: 1rem;
+  max-width: min(92vw, 520px); padding: 0.8rem 1rem 0.8rem 1.1rem;
+  border-radius: 6px; background: var(--rt-ink); color: var(--rt-paper);
+  box-shadow: 0 10px 30px rgba(30, 45, 36, 0.25);
+  font-size: 0.9rem; font-weight: 600;
+  opacity: 0; pointer-events: none; transform: translate(-50%, 12px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+.rt-toast.is-visible { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); }
+.rt-toast-action {
+  flex: none; min-height: 36px; padding: 0.3rem 0.8rem;
+  border: 1px solid rgba(246, 243, 236, 0.6); border-radius: 999px;
+  background: transparent; color: var(--rt-paper); cursor: pointer; font-weight: 700;
+}
+.rt-toast-action:hover { background: rgba(246, 243, 236, 0.15); }
+.rt-toast-action:focus-visible { outline: 3px solid var(--rt-caramel); outline-offset: 2px; }
+
+/* Item page: saved state, loading and error (HE-5, HE-6) */
+.rt-button-saved { border-color: var(--rt-green); background: var(--rt-green); color: var(--rt-paper) !important; }
+.rt-button-saved:hover { background: #2B4535; }
+.rt-detail-tryon { display: inline-block; margin-top: 1rem; }
+.rt-loading-note { grid-column: 1 / -1; padding: 4rem 0; color: var(--rt-muted); font: italic 1.2rem var(--rt-serif); }
+.rt-item-error { grid-column: 1 / -1; max-width: 560px; padding: 3rem 0; }
+.rt-item-error h1 { margin: 0 0 0.6rem; font: 400 2.4rem/1.1 var(--rt-serif); }
+.rt-item-error p { margin: 0 0 1.4rem; color: var(--rt-muted); }
+.rt-item-error .rt-button { margin: 0 0.6rem 0.6rem 0; }
+
+/* Booking: confirmation code stands out (HE-10) */
+.rt-confirmation-code { padding: 0.8rem 1rem; border-left: 3px solid var(--rt-caramel); background: var(--rt-sand); }
+.rt-confirmation-code strong { font-size: 1.15rem; letter-spacing: 0.08em; }
+.rt-booking-success:focus { outline: none; }
+.rt-form-field select:disabled { background: var(--rt-sand); color: var(--rt-muted); cursor: not-allowed; }
+
+/* HE-19: floating assistant button steps aside when it would cover the page's own buttons */
+.rt-assistant-launcher { transition: opacity 200ms ease, transform 200ms ease, visibility 200ms; }
+.rt-assistant-launcher.is-tucked { opacity: 0; visibility: hidden; transform: translateY(16px); }
+
+/* HE-21: suggestion chips wrap instead of running off the panel */
+.rt-assistant-panel .rt-chat-suggestions ul { flex-wrap: wrap; overflow: visible; }
+.rt-assistant-panel .rt-chip { white-space: normal; text-align: left; }
+
+/* Group HE-5: shorter product photos so name and price show without scrolling */
+.rt-product-grid .rt-product-image img { aspect-ratio: 4 / 5; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rt-toast, .rt-assistant-launcher, .rt-logo-mark, .rt-text-link span { transition: none; }
+}
