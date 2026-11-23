@@ -21,14 +21,30 @@ const sizesFilter = document.getElementById('filter-size');
 const pricesFilter = document.getElementById('filter-price');
 const numResults = document.getElementById('results-count');
 
-filterPanel.addEventListener('change', () => {
+filterPanel.addEventListener('change', applyFilters);
+
+// Part C (HE-11): search as you type, after a short pause, instead of only on Enter
+let searchTimer;
+searchBar.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(applyFilters, 200);
+});
+
+// Part C (HE-15): Stores page links here with ?store=..., so start with that store picked
+const startStore = new URLSearchParams(window.location.search).get('store');
+if (startStore && Array.from(storesFilter.options).some(option => option.value === startStore)) {
+    storesFilter.value = startStore;
+    applyFilters();
+}
+
+function applyFilters() {
     let searchFilter = [];
     let storeFilter = [];
     let categoryFilter = [];
     let sizeFilter = [];
     let priceFilter = [];
     if(searchBar.value.trim() !== ''){
-        searchFilter = search(searchBar.value.toLowerCase().replace(/\s/g,''));
+        searchFilter = search(searchBar.value);
     }
     if(storesFilter.value != ''){
         storeFilter = filterStores(storesFilter.value);
@@ -49,7 +65,7 @@ filterPanel.addEventListener('change', () => {
 
     
     updateFilters(searchFilter, storeFilter, categoryFilter, sizeFilter, priceFilter);
-});
+}
 
 filterClear.addEventListener('click', clearFilters);
 filterClearNone.addEventListener('click', clearFilters);
@@ -77,7 +93,7 @@ function clearFilters() {
         }
     });
     emptyResults.setAttribute('hidden','');
-    numResults.textContent = "8 pieces";
+    numResults.textContent = piecesLabel(productList.length);
 
     searchBar.value = '';
     storesFilter.selectedIndex = 0;
@@ -88,7 +104,7 @@ function clearFilters() {
 
 //Function hides all elements with that have been filtered out
 function showFilters(items){
-    let count = 8;
+    let count = productList.length;
     Array.from(productList).forEach(article => {
         if(article.hasAttribute('hidden')){
             article.removeAttribute('hidden');
@@ -103,21 +119,46 @@ function showFilters(items){
         }
     });
 
-    numResults.textContent = `${count} pieces`;
+    numResults.textContent = piecesLabel(count);
     if(count == 0){
         emptyResults.removeAttribute('hidden');
     }
 }
 
-//Function implements the search filtering
+function piecesLabel(count) {
+    return count === 1 ? '1 piece' : `${count} pieces`;
+}
+
+// Words people might type that mean one of our categories
+const SEARCH_SYNONYMS = {
+    coat: 'jacket', coats: 'jacket', outerwear: 'jacket', blazers: 'blazer',
+    jeans: 'jean', denim: 'jean', pants: 'jean', sweaters: 'sweater', jumper: 'sweater', knit: 'sweater',
+    shirts: 'shirt', top: 'shirt', tops: 'shirt', blouse: 'shirt', dresses: 'dress',
+};
+
+// Turns "Jackets" into "jacket" so plural and singular searches match
+function normalizeWord(word) {
+    word = word.toLowerCase();
+    if (SEARCH_SYNONYMS[word]) return SEARCH_SYNONYMS[word];
+    if (word.length > 3 && word.endsWith('es') && /(sh|ch|ss|x)es$/.test(word)) return word.slice(0, -2);
+    if (word.length > 3 && word.endsWith('s') && !word.endsWith('ss')) return word.slice(0, -1);
+    return word;
+}
+
+//Function implements the search filtering. Every word typed has to match the piece somewhere.
 function search(query){
-    const searchResults = Array.from(productInfo).map(item => {
-        const itemName = item.getElementsByClassName('rt-product-title-row')[0].textContent.toLowerCase().replace(/\s/g,'');
-        if(!itemName.includes(query)){
-            return item.parentElement;
+    const words = query.toLowerCase().split(/\s+/).filter(Boolean).map(normalizeWord);
+    return Array.from(productList).map(card => {
+        const haystack = [
+            card.querySelector('.rt-product-title-row h3').textContent,
+            card.querySelector('.rt-store-link').textContent,
+            card.getAttribute('data-category'),
+        ].join(' ').toLowerCase().split(/[^a-z]+/).filter(Boolean).map(normalizeWord).join(' ');
+        const matches = words.every(word => haystack.includes(word));
+        if (!matches) {
+            return card;
         }
     });
-    return searchResults;
 }
 
 //Function implements filtering by store
@@ -233,22 +274,47 @@ sortItems.addEventListener('change', () => {
 /*
     2. Save favorites. Clicking the heart changes it to show the item is saved, and the item appears on the Favorites page. Clicking again removes it.
 */
+// Only one favorites request for the whole grid, shared by every heart
+let favoritesRequest = null;
+
 const favoriteButtons = document.getElementsByClassName('rt-favorite-button');
 Array.from(favoriteButtons).forEach(button => {
-    const itemId = button.parentElement.parentElement.getAttribute('data-item-id');
+    const card = button.closest('.rt-product-card');
+    const itemId = card.getAttribute('data-item-id');
+    const title = card.querySelector('h3').textContent;
     loadServerFavorites().then(favorites => {
-        if(favorites.includes(itemId)){
-            button.classList.add('is-saved');
+        if(favorites && favorites.includes(itemId)){
+            setHeart(button, true, title);
         }
     });
 
     button.addEventListener('click', () => {
-        button.classList.toggle('is-saved');
-        saveServerFavorite(button.parentElement.parentElement.getAttribute('data-item-id'), button.classList.contains('is-saved'));
+        const saved = !button.classList.contains('is-saved');
+        setHeart(button, saved, title);
+        showToast(saved ? `Saved ${title} to your favorites.` : `Removed ${title} from your favorites.`);
+        saveServerFavorite(itemId, saved);
     });
 });
 
+function setHeart(button, saved, title) {
+    button.classList.toggle('is-saved', saved);
+    button.setAttribute('aria-pressed', saved ? 'true' : 'false');
+    button.setAttribute('aria-label', saved ? `Remove ${title} from favorites` : `Save ${title} to favorites`);
+}
 
+function showToast(message) {
+    let toast = document.querySelector('.rt-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'rt-toast';
+        toast.setAttribute('role', 'status');
+        document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.classList.add('is-visible');
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(() => toast.classList.remove('is-visible'), 2600);
+}
 
 //-- API stuff --> copied from Ismael's tryon.js
 function api() {
@@ -265,7 +331,8 @@ function saveServerFavorite(id, saved) {
 
 function loadServerFavorites() {
     if (!api()) return Promise.resolve(null);
-    return api().request("favorites", { visitor: true }).then(data => {
+    if (favoritesRequest) return favoritesRequest;
+    return favoritesRequest = api().request("favorites", { visitor: true }).then(data => {
       return (data.items || []).map(item => item.item_id);
     }).catch(() => null);
   }

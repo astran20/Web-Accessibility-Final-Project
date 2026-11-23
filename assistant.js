@@ -81,6 +81,21 @@
     return request;
   }
 
+  // Words that carry meaning but that none of the word lists above understand
+  var FILLER = /^(a|an|the|for|to|of|in|on|at|with|and|or|but|my|me|i|im|i'm|want|need|looking|look|find|show|something|some|anything|any|piece|pieces|clothes|clothing|outfit|please|thanks|like|would|could|can|you|that|this|is|it|be|good|nice|new|wear|go|going|get|dollars|size|under|below|over|above|less|more|than|max|maximum|up|least|no|between|cheap|budget|affordable|inexpensive)$/;
+  function unknownWords(text) {
+    var words = text.toLowerCase().replace(/[“”"$.,!?]/g, " ").split(/\s+/).filter(Boolean);
+    return words.filter(function (word) {
+      if (FILLER.test(word) || /^\d/.test(word) || word.length < 3) return false;
+      var padded = " " + word + " ";
+      var lists = [CATEGORY_WORDS, TAG_WORDS, COLOR_WORDS];
+      for (var i = 0; i < lists.length; i++) {
+        for (var j = 0; j < lists[i].length; j++) { if (lists[i][j][0].test(padded)) return false; }
+      }
+      return !SIZE_WORDS[word];
+    }).filter(function (word, i, all) { return all.indexOf(word) === i; });
+  }
+
   function passes(item, request, rules) {
     if (rules.category && request.categories.length && request.categories.indexOf(item.category) === -1) return false;
     if (rules.size && request.size && item.size !== request.size) return false;
@@ -215,8 +230,17 @@
         return ["I looked for " + summary(request) + ", but nothing in the current edit matches. Try a different color or occasion, or browse everything on the Explore page."];
       }
       var parts = ["I looked for " + summary(request) + "."];
+      // Part C (HE-20): be upfront when a color or word didn't match, instead of calling everything a match
+      var missingColors = request.colors.filter(function (c) {
+        return !found.results.some(function (item) { return item.colors.indexOf(c) !== -1; });
+      });
+      var closeOnly = missingColors.length > 0;
       if (found.note) parts.push(node("p", "rt-msg-note", found.note));
-      parts.push(found.results.length === 1 ? "Here's the best match:" : "Here are the top " + found.results.length + " matches:");
+      if (closeOnly) parts.push(node("p", "rt-msg-note", "Nothing in " + missingColors.join(" or ") + " right now, so these are the closest pieces in other colors."));
+      var unknown = unknownWords(text);
+      if (unknown.length) parts.push(node("p", "rt-msg-note", "I don't know how to search for “" + unknown.join("”, “") + "” yet, so I left that out."));
+      if (closeOnly) parts.push(found.results.length === 1 ? "Here's the closest one:" : "Here are the closest " + found.results.length + ":");
+      else parts.push(found.results.length === 1 ? "Here's the best match:" : "Here are the top " + found.results.length + " matches:");
       var list = node("ul", "rt-rec-list");
       found.results.forEach(function (item) { list.appendChild(resultCard(item, request)); });
       parts.push(list);
@@ -298,6 +322,20 @@
 
     addMessage("bot", ["Hi! Tell me what you're looking for: a type of piece, size, color, budget or occasion. I'll suggest pieces from the local shops, and you can put any of them on a model in the preview."]);
     launcher.hidden = false;
+
+    // Part C (HE-19): tuck the floating button away while the in-page "Ask" button or the
+    // preview's action buttons are on screen, so it never covers "Book an in-store fitting".
+    var covered = document.querySelectorAll(".rt-assistant-prompt, [data-tryon-book]");
+    if ("IntersectionObserver" in window && covered.length) {
+      var visible = new Set();
+      var watcher = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) visible.add(entry.target); else visible.delete(entry.target);
+        });
+        launcher.classList.toggle("is-tucked", visible.size > 0);
+      }, { rootMargin: "0px 0px -40px 0px" });
+      covered.forEach(function (el) { watcher.observe(el); });
+    }
     var prompt = document.querySelector("[data-assistant-prompt]");
     if (prompt) prompt.hidden = false;
   }
