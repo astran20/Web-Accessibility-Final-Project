@@ -18,7 +18,7 @@ Open `index.html` in a browser, or run `python3 -m http.server 8000` from this f
 
 ## JavaScript integration points
 
-All current RETHREAD pages are static; no booking, filtering, sorting, or favorite action is implemented. Keep the existing Campus Market `app.js` separate: it expects the former marketplace markup and is intentionally not loaded by the new `index.html`. The existing FAQ page and its `faq.js` are unchanged.
+All current RETHREAD pages are static; no booking, filtering, sorting, or favorite action is implemented.
 
 - Explore: `#clothes-search[data-search-clothes]`, `#filter-store[data-filter-store]`, `#filter-category[data-filter-category]`, `#filter-size[data-filter-size]`, `#filter-price[data-filter-price]`, and `#sort-items[data-sort-clothes]` are the search/filter/sort controls. Each product has a stable `data-item-id`, `data-store`, `data-category`, `data-size`, and `data-price`. Update `#results-count`; show `#empty-results` and hide `#product-grid` when there are no matches. `[data-clear-filters]` is the reset control.
 - Favorites: `[data-favorite-toggle="item-01"]` identifies a favorite action; maintain `aria-pressed` and the `.is-saved` class together. `#saved-items` and `#empty-favorites` are the two page states; toggle their `hidden` attributes. The initial saved piece is example-only.
